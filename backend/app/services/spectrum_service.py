@@ -7,9 +7,7 @@ class SpectrumService:
 
         with spectrum_state.lock:
 
-            snapshot = (
-                spectrum_state.snapshot
-            )
+            snapshot = spectrum_state.snapshot
 
             return {
                 "timestamp":

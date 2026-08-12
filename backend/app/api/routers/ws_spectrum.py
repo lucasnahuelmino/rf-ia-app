@@ -21,7 +21,9 @@ async def spectrum_ws(
 
             with spectrum_state.lock:
 
-                snapshot = spectrum_state.snapshot
+                snapshot = (
+                    spectrum_state.snapshot
+                )
 
                 payload = {
                     "timestamp":
@@ -48,7 +50,7 @@ async def spectrum_ws(
                     "trace":
                         snapshot.trace,
                 }
-                
+
             await websocket.send_json(
                 payload
             )
