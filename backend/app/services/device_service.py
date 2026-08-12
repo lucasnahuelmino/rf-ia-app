@@ -1,24 +1,19 @@
-from __future__ import annotations
-
 from app.devices.bb60c.adapter import BB60CAdapter
 
 
 class DeviceService:
-    """
-    Application service layer.
 
-    El resto de la aplicación utiliza esta clase y no accede
-    directamente al SDK ni al adapter.
-    """
+    def __init__(self):
+        self._device = BB60CAdapter()
 
-    def __init__(self, device: BB60CAdapter | None = None) -> None:
-        self._device = device or BB60CAdapter()
+    def get_diagnostics(self):
 
-    def get_diagnostic_report(self) -> dict:
         self._device.connect()
 
         try:
+
             info = self._device.get_device_info()
+
             diag = self._device.get_diagnostics()
 
             return {
