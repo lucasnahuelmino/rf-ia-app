@@ -56,22 +56,47 @@ class SpectrumWorker:
 
                 trace = device.get_trace()
 
+                stop_frequency_hz = (
+                    trace.info.start_frequency_hz
+                    +
+                    (
+                        trace.info.trace_length
+                        * trace.info.bin_size_hz
+                    )
+                )
+
                 with spectrum_state.lock:
 
-                    spectrum_state.trace = (
-                        trace.trace_max.tolist()
+                    spectrum_state.snapshot.timestamp = (
+                        time.time()
                     )
 
-                    spectrum_state.trace_length = (
-                        trace.info.trace_length
+                    spectrum_state.snapshot.center_frequency_hz = (
+                        config.center_frequency_hz
                     )
 
-                    spectrum_state.bin_size_hz = (
+                    spectrum_state.snapshot.span_hz = (
+                        config.span_hz
+                    )
+
+                    spectrum_state.snapshot.start_frequency_hz = (
+                        trace.info.start_frequency_hz
+                    )
+
+                    spectrum_state.snapshot.stop_frequency_hz = (
+                        stop_frequency_hz
+                    )
+
+                    spectrum_state.snapshot.bin_size_hz = (
                         trace.info.bin_size_hz
                     )
 
-                    spectrum_state.start_frequency_hz = (
-                        trace.info.start_frequency_hz
+                    spectrum_state.snapshot.trace_length = (
+                        trace.info.trace_length
+                    )
+
+                    spectrum_state.snapshot.trace = (
+                        trace.trace_max.tolist()
                     )
 
                 time.sleep(0.05)

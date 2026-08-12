@@ -1,5 +1,7 @@
 from threading import Lock
 
+from app.rf.models import SpectrumSnapshot
+
 
 class SpectrumState:
 
@@ -7,13 +9,16 @@ class SpectrumState:
 
         self.lock = Lock()
 
-        self.trace = None
-
-        self.trace_length = 0
-
-        self.bin_size_hz = 0.0
-
-        self.start_frequency_hz = 0.0
+        self.snapshot = SpectrumSnapshot(
+            timestamp=0.0,
+            center_frequency_hz=0.0,
+            span_hz=0.0,
+            start_frequency_hz=0.0,
+            stop_frequency_hz=0.0,
+            bin_size_hz=0.0,
+            trace_length=0,
+            trace=None,
+        )
 
 
 spectrum_state = SpectrumState()

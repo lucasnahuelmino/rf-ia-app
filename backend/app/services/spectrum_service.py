@@ -7,16 +7,32 @@ class SpectrumService:
 
         with spectrum_state.lock:
 
-            return {
-                "trace_length":
-                    spectrum_state.trace_length,
+            snapshot = (
+                spectrum_state.snapshot
+            )
 
-                "bin_size_hz":
-                    spectrum_state.bin_size_hz,
+            return {
+                "timestamp":
+                    snapshot.timestamp,
+
+                "center_frequency_hz":
+                    snapshot.center_frequency_hz,
+
+                "span_hz":
+                    snapshot.span_hz,
 
                 "start_frequency_hz":
-                    spectrum_state.start_frequency_hz,
+                    snapshot.start_frequency_hz,
+
+                "stop_frequency_hz":
+                    snapshot.stop_frequency_hz,
+
+                "bin_size_hz":
+                    snapshot.bin_size_hz,
+
+                "trace_length":
+                    snapshot.trace_length,
 
                 "trace":
-                    spectrum_state.trace,
+                    snapshot.trace,
             }
