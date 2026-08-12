@@ -56,9 +56,17 @@ def main() -> None:
         )
 
         for i in range(samples_to_show):
+            power_dbm = trace.trace_max[i]
+
+            frecuency_hertz = (
+                trace.info.start_frequency_hz
+                + (i * trace.info.bin_size_hz)
+            )
+
             print(
-                f"{i:03d}: "
-                f"{trace.trace_max:.2f} dBm"
+                f"{i:03d}: | "
+                f"{frecuency_hertz / 1e6:.6f} MHz |"
+                f"{trace.trace_max[i]:.2f} dBm"
             )
 
     finally:
