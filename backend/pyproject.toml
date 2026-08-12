@@ -1,0 +1,9 @@
+[project]
+name = "rf-monitor"
+version = "0.1.0"
+description = "RF monitoring platform for Signal Hound BB60C"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
