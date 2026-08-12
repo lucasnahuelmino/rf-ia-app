@@ -3,6 +3,7 @@ import time
 
 from app.devices.bb60c.adapter import BB60CAdapter
 from app.devices.bb60c.models import SweepConfiguration
+from app.rf.config import spectrum_config
 
 from .state import spectrum_state
 
@@ -42,10 +43,20 @@ class SpectrumWorker:
             device.connect()
 
             config = SweepConfiguration(
-                center_frequency_hz=124.650e6,
-                span_hz=5e6,
-                rbw_hz=10e3,
-                vbw_hz=10e3,
+                center_frequency_hz=
+                    spectrum_config.center_frequency_hz,
+
+                span_hz=
+                    spectrum_config.span_hz,
+
+                rbw_hz=
+                    spectrum_config.rbw_hz,
+
+                vbw_hz=
+                    spectrum_config.vbw_hz,
+
+                reference_level_dbm=
+                    spectrum_config.reference_level_dbm,
             )
 
             device.configure_sweep(config)

@@ -6,8 +6,9 @@ from app.api.routers.health import router as health_router
 from app.api.routers.devices import router as devices_router
 from app.api.routers.spectrum import router as spectrum_router
 from app.api.routers.ws_spectrum import router as ws_router
-
+from app.api.routers.config import router as config_router
 from app.rf.spectrum_worker import SpectrumWorker
+
 
 
 worker = SpectrumWorker()
@@ -33,3 +34,4 @@ app.include_router(health_router)
 app.include_router(devices_router)
 app.include_router(spectrum_router)
 app.include_router(ws_router)
+app.include_router(config_router)
