@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 
 from app.api.routers.health import router as health_router
@@ -5,27 +7,14 @@ from app.api.routers.devices import router as devices_router
 from app.api.routers.spectrum import router as spectrum_router
 from app.api.routers.ws_spectrum import router as ws_router
 
-from contextlib import asynccontextmanager
+from app.rf.spectrum_worker import SpectrumWorker
 
-from app.rf.spectrum_worker import (
-    SpectrumWorker
-)
-
-app = FastAPI(
-    title="RF Monitor IA APP",
-    version="0.1.0",
-)
-
-app.include_router(health_router)
-app.include_router(devices_router)
-app.include_router(spectrum_router)
-app.include_router(ws_router)
 
 worker = SpectrumWorker()
 
 
 @asynccontextmanager
-async def lifespan(app):
+async def lifespan(app: FastAPI):
 
     worker.start()
 
@@ -39,3 +28,8 @@ app = FastAPI(
     version="0.1.0",
     lifespan=lifespan,
 )
+
+app.include_router(health_router)
+app.include_router(devices_router)
+app.include_router(spectrum_router)
+app.include_router(ws_router)
