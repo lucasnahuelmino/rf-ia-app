@@ -9,3 +9,5 @@ uvicorn
 numpy
 pytest
 pytest-mock
+fastapi
+uvicorn
