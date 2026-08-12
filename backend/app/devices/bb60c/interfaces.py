@@ -6,14 +6,14 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 
-@dataclass(slots=True)
+@dataclass
 class DeviceDiagnostics:
     temperature: float
     usb_voltage: float
     usb_current: float
 
 
-@dataclass(slots=True)
+@dataclass
 class DeviceInfo:
     device_type: int
     serial_number: int
