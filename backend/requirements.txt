@@ -4,3 +4,8 @@ numpy
 pydantic
 pytest
 pytest-mock
+fastapi
+uvicorn
+numpy
+pytest
+pytest-mock
