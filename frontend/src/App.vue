@@ -13,8 +13,8 @@
     <SpectrumControls />
 
     <SpectrumCanvas
-      v-if="trace"
-      :trace="trace"
+      v-if="snapshot"
+      :snapshot="snapshot"
     />
 
   </div>
@@ -38,6 +38,9 @@ import {
 import SpectrumControls
 from "./components/SpectrumControls.vue"
 
+const snapshot = computed(
+  () => spectrum.value
+)
 const {
   spectrum,
   connect,
