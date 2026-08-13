@@ -23,31 +23,18 @@
 
 <script setup lang="ts">
 
-import {
-  computed,
-  onMounted,
-} from "vue"
+import { computed, onMounted, } from "vue"
+import SpectrumCanvas from "./components/SpectrumCanvas.vue"
+import SpectrumControls from "./components/SpectrumControls.vue"
+import { useSpectrum } from "./composables/useSpectrum"
 
-import SpectrumCanvas
-from "./components/SpectrumCanvas.vue"
-
-import {
-  useSpectrum
-} from "./composables/useSpectrum"
-
-import SpectrumControls
-from "./components/SpectrumControls.vue"
-
-const snapshot = computed(
-  () => spectrum.value
-)
 const {
   spectrum,
   connect,
 } = useSpectrum()
 
-const trace = computed(
-  () => spectrum.value?.trace ?? []
+const snapshot = computed(
+  () => spectrum.value
 )
 
 onMounted(() => {
