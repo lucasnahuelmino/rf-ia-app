@@ -46,11 +46,11 @@ class SpectrumWorker:
 
             while self._running:
 
-                current_version = (
-                    spectrum_config.version
-                )
+                with spectrum_config.lock:
 
-                if current_version != last_config_version:
+                    current_version = (
+                        spectrum_config.version
+                    )
 
                     config = SweepConfiguration(
                         center_frequency_hz=
@@ -69,9 +69,19 @@ class SpectrumWorker:
                             spectrum_config.reference_level_dbm,
                     )
 
+                if current_version != last_config_version:
+
                     print(
                         "[SpectrumWorker] "
-                        "Applying new configuration..."
+                        f"Applying config v{current_version}"
+                    )
+
+                    print(
+                        "[SpectrumWorker] "
+                        f"CF={config.center_frequency_hz} "
+                        f"SPAN={config.span_hz} "
+                        f"RBW={config.rbw_hz} "
+                        f"VBW={config.vbw_hz}"
                     )
 
                     device.configure_sweep(
@@ -131,6 +141,17 @@ class SpectrumWorker:
 
                 time.sleep(0.05)
 
+        except Exception as exc:
+
+            print(
+                "[SpectrumWorker] ERROR:",
+                exc,
+            )
+
         finally:
 
             device.disconnect()
+
+            print(
+                "[SpectrumWorker] Device disconnected."
+            )
