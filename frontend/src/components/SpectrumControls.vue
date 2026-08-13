@@ -328,12 +328,30 @@ onMounted(
 
 .controls {
 
-  background: #181818;
-  border: 1px solid #333;
+  background: white;
 
-  padding: 15px;
+  border: 1px solid var(--sncte-border);
 
-  margin-bottom: 15px;
+  border-radius: var(--radius);
+
+  box-shadow: var(--shadow);
+
+  padding: 20px;
+
+  margin-bottom: 20px;
+}
+
+.controls h3 {
+
+  margin-top: 0;
+
+  margin-bottom: 16px;
+
+  color: var(--sncte-blue-dark);
+
+  font-size: 20px;
+
+  font-weight: 700;
 }
 
 .favoritos {
@@ -344,7 +362,35 @@ onMounted(
 
   flex-wrap: wrap;
 
-  margin-bottom: 15px;
+  padding-bottom: 12px;
+
+  margin-bottom: 16px;
+
+  border-bottom: 1px solid var(--sncte-border);
+}
+
+.favoritos button {
+
+  background: #edf3ff;
+
+  color: var(--sncte-blue-dark);
+
+  border: 1px solid var(--sncte-border);
+
+  border-radius: 20px;
+
+  padding: 8px 14px;
+
+  font-weight: 600;
+
+  transition: all .2s ease;
+}
+
+.favoritos button:hover {
+
+  background: var(--sncte-blue);
+
+  color: white;
 }
 
 .mode-selector {
@@ -353,7 +399,30 @@ onMounted(
 
   gap: 20px;
 
-  margin-bottom: 15px;
+  margin-bottom: 16px;
+
+  padding: 12px;
+
+  background: #f8fbff;
+
+  border: 1px solid var(--sncte-border);
+
+  border-radius: 10px;
+}
+
+.mode-selector label {
+
+  flex-direction: row;
+
+  align-items: center;
+
+  gap: 8px;
+
+  cursor: pointer;
+
+  color: var(--sncte-blue-dark);
+
+  font-weight: 500;
 }
 
 .grid {
@@ -366,9 +435,9 @@ onMounted(
       minmax(220px,1fr)
     );
 
-  gap: 12px;
+  gap: 14px;
 
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 label {
@@ -382,43 +451,92 @@ label {
 
 span {
 
-  color: #ccc;
+  color: var(--sncte-blue-dark);
 
   font-size: 13px;
+
+  font-weight: 600;
 }
 
-input {
+input,
+select {
 
-  background: #111;
+  height: 40px;
 
-  border: 1px solid #444;
+  padding: 0 12px;
 
-  color: white;
+  background: white;
 
-  padding: 8px;
+  color: var(--sncte-text);
+
+  border: 1px solid var(--sncte-border);
+
+  border-radius: 8px;
+
+  font-size: 14px;
+
+  transition: all .2s ease;
+}
+
+input:focus,
+select:focus {
+
+  outline: none;
+
+  border-color: var(--sncte-blue);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(
+      0,
+      60,
+      158,
+      0.15
+    );
+}
+
+input[readonly] {
+
+  background: #f6f8fc;
+
+  color: var(--sncte-blue-dark);
+
+  font-weight: 600;
 }
 
 button {
 
-  padding: 8px 12px;
-
   cursor: pointer;
+
+  border: none;
+
+  transition: all .2s ease;
 }
 
 .apply {
 
-  background: #00aa55;
+  background: var(--sncte-blue);
 
   color: white;
 
-  border: none;
+  border-radius: 10px;
 
-  font-weight: bold;
+  padding: 12px 18px;
+
+  font-size: 14px;
+
+  font-weight: 600;
 }
 
 .apply:hover {
 
-  background: #00cc66;
+  background: var(--sncte-blue-light);
+
+  transform: translateY(-1px);
 }
 
+.apply:active {
+
+  transform: translateY(0px);
+}
 </style>

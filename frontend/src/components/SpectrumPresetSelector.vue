@@ -109,3 +109,18 @@ function loadPreset() {
 }
 
 </script>
+
+<style scoped>
+.preset-panel {
+
+  background: #f8fbff;
+
+  border: 1px solid var(--sncte-border);
+
+  border-radius: 12px;
+
+  padding: 16px;
+
+  margin-bottom: 16px;
+}
+</style>

@@ -153,13 +153,17 @@ const peakLevel = computed(() => {
 
 .card {
 
-  min-width: 160px;
+  background: white;
 
-  padding: 10px;
+  border-radius: 12px;
 
-  border: 1px solid #333;
+  border: 1px solid var(--sncte-border);
 
-  background: #181818;
+  box-shadow: var(--shadow);
+
+  min-width: 180px;
+
+  padding: 12px;
 }
 
 .label {
@@ -173,13 +177,12 @@ const peakLevel = computed(() => {
 
 .value {
 
-  display: block;
-
-  color: #00ff55;
-
-  font-size: 18px;
+  color:
+    var(--sncte-blue);
 
   font-weight: bold;
+
+  font-size: 20px;
 }
 
 </style>

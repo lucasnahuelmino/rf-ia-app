@@ -2,27 +2,19 @@
 
   <header class="header">
 
-    <div class="branding">
+    <div>
 
-      <img
-        src="/enacom-logo.png"
-        alt="ENACOM"
-        class="logo"
-      />
+      <h1>
+        SNCTE
+      </h1>
 
-      <div>
-
-        <h1>
-          SNCTE
-        </h1>
-
-        <h2>
-          Sistema Nacional de Comprobación Técnica de Emisiones
-        </h2>
-
-      </div>
+      <h2>
+        Sistema Nacional de Comprobación Técnica de Emisiones
+      </h2>
 
     </div>
+
+    /enacom-logo.png
 
   </header>
 
@@ -34,25 +26,24 @@
 
   background: white;
 
-  border-bottom: 3px solid var(--sncte-blue);
-
-  padding: 15px 20px;
-
-  margin-bottom: 15px;
-}
-
-.branding {
-
   display: flex;
 
-  gap: 20px;
+  justify-content: space-between;
 
   align-items: center;
+
+  padding: 20px;
+
+  box-shadow: var(--shadow);
+
+  border-radius: var(--radius);
+
+  margin-bottom: 20px;
 }
 
 .logo {
 
-  height: 70px;
+  height: 80px;
 }
 
 h1 {
@@ -61,7 +52,7 @@ h1 {
 
   color: var(--sncte-blue-dark);
 
-  font-size: 32px;
+  font-size: 36px;
 }
 
 h2 {

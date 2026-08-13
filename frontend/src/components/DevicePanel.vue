@@ -8,39 +8,88 @@
 
     <div class="grid">
 
-      <div>
-        <b>Equipo</b>
-        <span>BB60C</span>
+      <div class="card">
+
+        <span class="label">
+          Equipo
+        </span>
+
+        <span class="value">
+          BB60C
+        </span>
+
       </div>
 
-      <div>
-        <b>Estado</b>
-        <span>Conectado</span>
+      <div class="card">
+
+        <span class="label">
+          Estado
+        </span>
+
+        <span class="value success">
+          Conectado
+        </span>
+
       </div>
 
-      <div>
-        <b>Firmware</b>
-        <span>{{ firmware }}</span>
+      <div class="card">
+
+        <span class="label">
+          Firmware
+        </span>
+
+        <span class="value">
+          {{ firmware ?? "--" }}
+        </span>
+
       </div>
 
-      <div>
-        <b>Serie</b>
-        <span>{{ serial }}</span>
+      <div class="card">
+
+        <span class="label">
+          Serie
+        </span>
+
+        <span class="value">
+          {{ serial ?? "--" }}
+        </span>
+
       </div>
 
-      <div>
-        <b>Temperatura</b>
-        <span>{{ temperature }} °C</span>
+      <div class="card">
+
+        <span class="label">
+          Temperatura
+        </span>
+
+        <span class="value">
+          {{ temperature?.toFixed?.(1) ?? "--" }} °C
+        </span>
+
       </div>
 
-      <div>
-        <b>USB</b>
-        <span>{{ voltage }} V</span>
+      <div class="card">
+
+        <span class="label">
+          Voltaje USB
+        </span>
+
+        <span class="value">
+          {{ voltage?.toFixed?.(2) ?? "--" }} V
+        </span>
+
       </div>
 
-      <div>
-        <b>Corriente</b>
-        <span>{{ current }} mA</span>
+      <div class="card">
+
+        <span class="label">
+          Corriente USB
+        </span>
+
+        <span class="value">
+          {{ current ?? "--" }} mA
+        </span>
+
       </div>
 
     </div>
@@ -72,11 +121,22 @@ defineProps({
 
   background: white;
 
+  border-radius: var(--radius);
+
   border: 1px solid var(--sncte-border);
 
-  padding: 15px;
+  box-shadow: var(--shadow);
+
+  padding: 16px;
 
   margin-bottom: 15px;
+}
+
+.panel h3 {
+
+  margin-top: 0;
+
+  color: var(--sncte-blue-dark);
 }
 
 .grid {
@@ -86,22 +146,48 @@ defineProps({
   grid-template-columns:
     repeat(
       auto-fit,
-      minmax(180px,1fr)
+      minmax(160px,1fr)
     );
 
   gap: 12px;
 }
 
-.grid div {
+.card {
 
-  display: flex;
+  background: #f8fbff;
 
-  flex-direction: column;
+  border: 1px solid var(--sncte-border);
+
+  border-radius: 10px;
+
+  padding: 12px;
 }
 
-.grid b {
+.label {
+
+  display: block;
+
+  color: #5a6a85;
+
+  font-size: 12px;
+
+  margin-bottom: 6px;
+
+  text-transform: uppercase;
+}
+
+.value {
 
   color: var(--sncte-blue-dark);
+
+  font-size: 20px;
+
+  font-weight: 600;
+}
+
+.success {
+
+  color: #198754;
 }
 
 </style>

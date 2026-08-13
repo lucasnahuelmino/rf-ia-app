@@ -253,7 +253,7 @@ function drawLegend(
 
   ctx.font = "13px monospace"
 
-  ctx.fillStyle = "#00ff55"
+  ctx.fillStyle = "#3b82f6"
   ctx.fillText(
     "LIVE",
     width - 140,
