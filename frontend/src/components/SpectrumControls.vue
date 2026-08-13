@@ -4,31 +4,91 @@
 
     <h3>RF Configuration</h3>
 
+    <div class="mode-selector">
+
+      <label>
+
+        <input
+          v-model="mode"
+          value="center"
+          type="radio"
+        />
+
+        Center + Span
+
+      </label>
+
+      <label>
+
+        <input
+          v-model="mode"
+          value="range"
+          type="radio"
+        />
+
+        Start + Stop
+
+      </label>
+
+    </div>
+
     <div class="grid">
 
-      <label>
+      <template v-if="mode === 'center'">
 
-        <span>Center Frequency (MHz)</span>
+        <label>
 
-        <input
-          v-model.number="centerMHz"
-          type="number"
-          step="0.001"
-        />
+          <span>Center (MHz)</span>
 
-      </label>
+          <input
+            v-model.number="centerMHz"
+            type="number"
+            step="0.001"
+          />
 
-      <label>
+        </label>
 
-        <span>Span (MHz)</span>
+        <label>
 
-        <input
-          v-model.number="spanMHz"
-          type="number"
-          step="0.001"
-        />
+          <span>Span (MHz)</span>
 
-      </label>
+          <input
+            v-model.number="spanMHz"
+            type="number"
+            step="0.001"
+          />
+
+        </label>
+
+      </template>
+
+      <template v-else>
+
+        <label>
+
+          <span>Start (MHz)</span>
+
+          <input
+            v-model.number="startMHz"
+            type="number"
+            step="0.001"
+          />
+
+        </label>
+
+        <label>
+
+          <span>Stop (MHz)</span>
+
+          <input
+            v-model.number="stopMHz"
+            type="number"
+            step="0.001"
+          />
+
+        </label>
+
+      </template>
 
       <label>
 
@@ -54,7 +114,7 @@
 
       <label>
 
-        <span>Reference Level (dBm)</span>
+        <span>Reference (dBm)</span>
 
         <input
           v-model.number="config.reference_level_dbm"
@@ -65,7 +125,38 @@
 
     </div>
 
-    <button @click="applyConfig">
+    <div class="presets">
+
+      <button @click="presetAir">
+        AIR
+      </button>
+
+      <button @click="presetVHF">
+        VHF
+      </button>
+
+      <button @click="presetUHF">
+        UHF
+      </button>
+
+      <button @click="preset433">
+        433 MHz
+      </button>
+
+      <button @click="preset868">
+        868 MHz
+      </button>
+
+      <button @click="presetWifi">
+        WiFi
+      </button>
+
+    </div>
+
+    <button
+      class="apply"
+      @click="applyConfig"
+    >
       Apply
     </button>
 
@@ -79,6 +170,7 @@ import {
   computed,
   onMounted,
   reactive,
+  ref,
 } from "vue"
 
 import {
@@ -86,15 +178,18 @@ import {
   updateSpectrumConfig,
 } from "../services/configService"
 
+const mode =
+  ref("center")
+
 const config = reactive({
 
   center_frequency_hz: 0,
 
   span_hz: 0,
 
-  rbw_hz: 0,
+  rbw_hz: 10000,
 
-  vbw_hz: 0,
+  vbw_hz: 10000,
 
   reference_level_dbm: 0,
 })
@@ -117,6 +212,73 @@ const spanMHz = computed({
   set: (value: number) =>
     config.span_hz =
       value * 1e6,
+})
+
+const startMHz = computed({
+
+  get: () =>
+    (
+      (
+        config.center_frequency_hz
+        - config.span_hz / 2
+      ) / 1e6
+    ),
+
+  set: (value: number) => {
+
+    const stop =
+      (
+        config.center_frequency_hz
+        + config.span_hz / 2
+      )
+
+    config.center_frequency_hz =
+      (
+        (
+          value * 1e6
+        )
+        +
+        stop
+      ) / 2
+
+    config.span_hz =
+      stop
+      -
+      value * 1e6
+  },
+})
+
+const stopMHz = computed({
+
+  get: () =>
+    (
+      (
+        config.center_frequency_hz
+        + config.span_hz / 2
+      ) / 1e6
+    ),
+
+  set: (value: number) => {
+
+    const start =
+      (
+        config.center_frequency_hz
+        - config.span_hz / 2
+      )
+
+    config.center_frequency_hz =
+      (
+        start
+        +
+        value * 1e6
+      ) / 2
+
+    config.span_hz =
+      (
+        value * 1e6
+      )
+      - start
+  },
 })
 
 const rbwKHz = computed({
@@ -157,9 +319,49 @@ async function applyConfig() {
   )
 }
 
-onMounted(
-  loadConfig
-)
+function presetAir() {
+
+  centerMHz.value = 127.5
+
+  spanMHz.value = 19
+}
+
+function presetVHF() {
+
+  centerMHz.value = 145
+
+  spanMHz.value = 20
+}
+
+function presetUHF() {
+
+  centerMHz.value = 435
+
+  spanMHz.value = 40
+}
+
+function preset433() {
+
+  centerMHz.value = 433.92
+
+  spanMHz.value = 5
+}
+
+function preset868() {
+
+  centerMHz.value = 868
+
+  spanMHz.value = 10
+}
+
+function presetWifi() {
+
+  centerMHz.value = 2440
+
+  spanMHz.value = 100
+}
+
+onMounted(loadConfig)
 
 </script>
 
@@ -176,11 +378,13 @@ onMounted(
   margin-bottom: 15px;
 }
 
-h3 {
+.mode-selector {
 
-  margin-top: 0;
+  display: flex;
 
-  color: #00ff55;
+  gap: 20px;
+
+  margin-bottom: 15px;
 }
 
 .grid {
@@ -216,26 +420,40 @@ span {
 
 input {
 
-  padding: 8px;
-
   background: #111;
 
   border: 1px solid #444;
 
   color: white;
+
+  padding: 8px;
+}
+
+.presets {
+
+  display: flex;
+
+  gap: 10px;
+
+  flex-wrap: wrap;
+
+  margin-bottom: 15px;
 }
 
 button {
-  width: 120px;
-  padding: 10px;
-  border: none;
-  background: #00aa55;
-  color: white;
+
+  padding: 8px 12px;
+
   cursor: pointer;
 }
 
-button:hover {
-  background: #00cc66;
+.apply {
+
+  background: #00aa55;
+
+  color: white;
+
+  border: none;
 }
 
 </style>
