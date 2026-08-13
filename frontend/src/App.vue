@@ -11,7 +11,11 @@
     </p>
 
     <SpectrumControls />
-
+    
+    <SpectrumStatus
+      v-if="snapshot"
+      :snapshot="snapshot"
+    />
     <SpectrumCanvas
       v-if="snapshot"
       :snapshot="snapshot"
@@ -27,6 +31,7 @@ import { computed, onMounted, } from "vue"
 import SpectrumCanvas from "./components/SpectrumCanvas.vue"
 import SpectrumControls from "./components/SpectrumControls.vue"
 import { useSpectrum } from "./composables/useSpectrum"
+import SpectrumStatus from "./components/SpectrumStatus.vue"
 
 const {
   spectrum,
