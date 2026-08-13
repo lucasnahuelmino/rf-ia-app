@@ -15,6 +15,13 @@
       :trace="trace"
     />
 
+    <SpectrumControls />
+
+    <SpectrumCanvas
+      v-if="trace"
+      :trace="trace"
+    />
+
   </div>
 
 </template>
@@ -32,6 +39,9 @@ from "./components/SpectrumCanvas.vue"
 import {
   useSpectrum
 } from "./composables/useSpectrum"
+
+import SpectrumControls
+from "./components/SpectrumControls.vue"
 
 const {
   spectrum,
