@@ -2,32 +2,54 @@
 
   <div class="controls">
 
-    <h3>RF Configuration</h3>
+    <h3>Configuración RF</h3>
+
+    <SpectrumPresetSelector
+      @presetLoaded="onPresetLoaded"
+    />
+
+    <div class="favoritos">
+
+      <button @click="cargarFavorito(108,136)">
+        AÉREO
+      </button>
+
+      <button @click="cargarFavorito(88,108)">
+        FM
+      </button>
+
+      <button @click="cargarFavorito(703,803)">
+        LTE700
+      </button>
+
+      <button @click="cargarFavorito(3300,3600)">
+        5G
+      </button>
+
+      <button @click="cargarFavorito(431,436)">
+        ISM 433
+      </button>
+
+    </div>
 
     <div class="mode-selector">
 
       <label>
-
         <input
           v-model="mode"
           value="center"
           type="radio"
         />
-
-        Center + Span
-
+        Centro + Span
       </label>
 
       <label>
-
         <input
           v-model="mode"
           value="range"
           type="radio"
         />
-
-        Start + Stop
-
+        Inicio + Fin
       </label>
 
     </div>
@@ -37,19 +59,16 @@
       <template v-if="mode === 'center'">
 
         <label>
-
-          <span>Center (MHz)</span>
+          <span>Frecuencia Central (MHz)</span>
 
           <input
             v-model.number="centerMHz"
             type="number"
             step="0.001"
           />
-
         </label>
 
         <label>
-
           <span>Span (MHz)</span>
 
           <input
@@ -57,7 +76,6 @@
             type="number"
             step="0.001"
           />
-
         </label>
 
       </template>
@@ -65,91 +83,71 @@
       <template v-else>
 
         <label>
-
-          <span>Start (MHz)</span>
+          <span>Frecuencia Inicial (MHz)</span>
 
           <input
             v-model.number="startMHz"
             type="number"
             step="0.001"
           />
-
         </label>
 
         <label>
-
-          <span>Stop (MHz)</span>
+          <span>Frecuencia Final (MHz)</span>
 
           <input
             v-model.number="stopMHz"
             type="number"
             step="0.001"
           />
-
         </label>
 
       </template>
 
       <label>
-
         <span>RBW (kHz)</span>
 
         <input
           v-model.number="rbwKHz"
           type="number"
         />
-
       </label>
 
       <label>
-
         <span>VBW (kHz)</span>
 
         <input
           v-model.number="vbwKHz"
           type="number"
         />
-
       </label>
 
       <label>
-
-        <span>Reference (dBm)</span>
+        <span>Nivel de Referencia (dBm)</span>
 
         <input
           v-model.number="config.reference_level_dbm"
           type="number"
         />
-
       </label>
 
-    </div>
+      <label>
+        <span>Inicio Calculado (MHz)</span>
 
-    <div class="presets">
+        <input
+          :value="startMHz.toFixed(3)"
+          readonly
+        />
+      </label>
 
-      <button @click="presetAir">
-        AIR
-      </button>
+      <label>
+        <span>Fin Calculado (MHz)</span>
 
-      <button @click="presetVHF">
-        VHF
-      </button>
-
-      <button @click="presetUHF">
-        UHF
-      </button>
-
-      <button @click="preset433">
-        433 MHz
-      </button>
-
-      <button @click="preset868">
-        868 MHz
-      </button>
-
-      <button @click="presetWifi">
-        WiFi
-      </button>
+        <input
+          :value="stopMHz.toFixed(3)"
+          readonly
+        />
+      </label>
 
     </div>
 
@@ -157,7 +155,7 @@
       class="apply"
       @click="applyConfig"
     >
-      Apply
+      Aplicar Configuración
     </button>
 
   </div>
@@ -172,6 +170,9 @@ import {
   reactive,
   ref,
 } from "vue"
+
+import SpectrumPresetSelector
+  from "./SpectrumPresetSelector.vue"
 
 import {
   getSpectrumConfig,
@@ -218,33 +219,31 @@ const startMHz = computed({
 
   get: () =>
     (
-      (
-        config.center_frequency_hz
-        - config.span_hz / 2
-      ) / 1e6
-    ),
+      config.center_frequency_hz
+      -
+      config.span_hz / 2
+    ) / 1e6,
 
   set: (value: number) => {
 
-    const stop =
-      (
-        config.center_frequency_hz
-        + config.span_hz / 2
-      )
+    const stopFreq =
+      config.center_frequency_hz
+      +
+      config.span_hz / 2
 
     config.center_frequency_hz =
       (
-        (
-          value * 1e6
-        )
+        value * 1e6
         +
-        stop
+        stopFreq
       ) / 2
 
     config.span_hz =
-      stop
+      stopFreq
       -
-      value * 1e6
+      (
+        value * 1e6
+      )
   },
 })
 
@@ -252,32 +251,33 @@ const stopMHz = computed({
 
   get: () =>
     (
-      (
-        config.center_frequency_hz
-        + config.span_hz / 2
-      ) / 1e6
-    ),
+      config.center_frequency_hz
+      +
+      config.span_hz / 2
+    ) / 1e6,
 
   set: (value: number) => {
 
-    const start =
-      (
-        config.center_frequency_hz
-        - config.span_hz / 2
-      )
+    const startFreq =
+      config.center_frequency_hz
+      -
+      config.span_hz / 2
 
     config.center_frequency_hz =
       (
-        start
+        startFreq
         +
-        value * 1e6
+        (
+          value * 1e6
+        )
       ) / 2
 
     config.span_hz =
       (
         value * 1e6
       )
-      - start
+      -
+      startFreq
   },
 })
 
@@ -319,49 +319,42 @@ async function applyConfig() {
   )
 }
 
-function presetAir() {
+function cargarFavorito(
+  inicioMHz: number,
+  finMHz: number,
+) {
 
-  centerMHz.value = 127.5
+  centerMHz.value =
+    (
+      inicioMHz +
+      finMHz
+    ) / 2
 
-  spanMHz.value = 19
+  spanMHz.value =
+    finMHz -
+    inicioMHz
 }
 
-function presetVHF() {
+function onPresetLoaded(
+  preset: any,
+) {
 
-  centerMHz.value = 145
+  centerMHz.value =
+    (
+      preset.inicioMHz +
+      preset.finMHz
+    ) / 2
 
-  spanMHz.value = 20
+  spanMHz.value =
+    (
+      preset.finMHz -
+      preset.inicioMHz
+    )
 }
 
-function presetUHF() {
-
-  centerMHz.value = 435
-
-  spanMHz.value = 40
-}
-
-function preset433() {
-
-  centerMHz.value = 433.92
-
-  spanMHz.value = 5
-}
-
-function preset868() {
-
-  centerMHz.value = 868
-
-  spanMHz.value = 10
-}
-
-function presetWifi() {
-
-  centerMHz.value = 2440
-
-  spanMHz.value = 100
-}
-
-onMounted(loadConfig)
+onMounted(
+  loadConfig
+)
 
 </script>
 
@@ -376,6 +369,17 @@ onMounted(loadConfig)
   padding: 15px;
 
   margin-bottom: 15px;
+}
+
+.favoritos {
+
+  display: flex;
+
+  gap: 8px;
+
+  flex-wrap: wrap;
+
+  margin-bottom: 16px;
 }
 
 .mode-selector {
@@ -399,7 +403,7 @@ onMounted(loadConfig)
 
   gap: 12px;
 
-  margin-bottom: 12px;
+  margin-bottom: 15px;
 }
 
 label {
@@ -429,17 +433,6 @@ input {
   padding: 8px;
 }
 
-.presets {
-
-  display: flex;
-
-  gap: 10px;
-
-  flex-wrap: wrap;
-
-  margin-bottom: 15px;
-}
-
 button {
 
   padding: 8px 12px;
@@ -454,6 +447,13 @@ button {
   color: white;
 
   border: none;
+
+  font-weight: bold;
+}
+
+.apply:hover {
+
+  background: #00cc66;
 }
 
 </style>
