@@ -10,23 +10,23 @@
 
     <div class="favoritos">
 
-      <button @click="cargarFavorito(108,136)">
-        AÉREO
-      </button>
-
-      <button @click="cargarFavorito(88,108)">
+      <button @click="loadFavorite(88,108)">
         FM
       </button>
 
-      <button @click="cargarFavorito(703,803)">
+      <button @click="loadFavorite(108,136)">
+        AÉREO
+      </button>
+
+      <button @click="loadFavorite(703,803)">
         LTE700
       </button>
 
-      <button @click="cargarFavorito(3300,3600)">
+      <button @click="loadFavorite(3300,3600)">
         5G
       </button>
 
-      <button @click="cargarFavorito(431,436)">
+      <button @click="loadFavorite(431,436)">
         ISM 433
       </button>
 
@@ -56,53 +56,43 @@
 
     <div class="grid">
 
-      <template v-if="mode === 'center'">
+      <label>
+        <span>Frecuencia Inicial (MHz)</span>
 
-        <label>
-          <span>Frecuencia Central (MHz)</span>
+        <input
+          v-model.number="startMHz"
+          type="number"
+          step="0.001"
+        />
+      </label>
 
-          <input
-            v-model.number="centerMHz"
-            type="number"
-            step="0.001"
-          />
-        </label>
+      <label>
+        <span>Frecuencia Final (MHz)</span>
 
-        <label>
-          <span>Span (MHz)</span>
+        <input
+          v-model.number="stopMHz"
+          type="number"
+          step="0.001"
+        />
+      </label>
 
-          <input
-            v-model.number="spanMHz"
-            type="number"
-            step="0.001"
-          />
-        </label>
+      <label>
+        <span>Frecuencia Central (MHz)</span>
 
-      </template>
+        <input
+          :value="centerMHz.toFixed(3)"
+          readonly
+        />
+      </label>
 
-      <template v-else>
+      <label>
+        <span>Span (MHz)</span>
 
-        <label>
-          <span>Frecuencia Inicial (MHz)</span>
-
-          <input
-            v-model.number="startMHz"
-            type="number"
-            step="0.001"
-          />
-        </label>
-
-        <label>
-          <span>Frecuencia Final (MHz)</span>
-
-          <input
-            v-model.number="stopMHz"
-            type="number"
-            step="0.001"
-          />
-        </label>
-
-      </template>
+        <input
+          :value="spanMHz.toFixed(3)"
+          readonly
+        />
+      </label>
 
       <label>
         <span>RBW (kHz)</span>
@@ -123,29 +113,11 @@
       </label>
 
       <label>
-        <span>Nivel de Referencia (dBm)</span>
+        <span>Referencia (dBm)</span>
 
         <input
           v-model.number="config.reference_level_dbm"
           type="number"
-        />
-      </label>
-
-      <label>
-        <span>Inicio Calculado (MHz)</span>
-
-        <input
-          :value="startMHz.toFixed(3)"
-          readonly
-        />
-      </label>
-
-      <label>
-        <span>Fin Calculado (MHz)</span>
-
-        <input
-          :value="stopMHz.toFixed(3)"
-          readonly
         />
       </label>
 
@@ -180,7 +152,7 @@ import {
 } from "../services/configService"
 
 const mode =
-  ref("center")
+  ref("range")
 
 const config = reactive({
 
@@ -319,37 +291,31 @@ async function applyConfig() {
   )
 }
 
-function cargarFavorito(
-  inicioMHz: number,
-  finMHz: number,
+async function loadFavorite(
+  startMHzValue: number,
+  stopMHzValue: number,
 ) {
 
-  centerMHz.value =
-    (
-      inicioMHz +
-      finMHz
-    ) / 2
+  startMHz.value =
+    startMHzValue
 
-  spanMHz.value =
-    finMHz -
-    inicioMHz
+  stopMHz.value =
+    stopMHzValue
+
+  await applyConfig()
 }
 
-function onPresetLoaded(
+async function onPresetLoaded(
   preset: any,
 ) {
 
-  centerMHz.value =
-    (
-      preset.inicioMHz +
-      preset.finMHz
-    ) / 2
+  startMHz.value =
+    preset.inicioMHz
 
-  spanMHz.value =
-    (
-      preset.finMHz -
-      preset.inicioMHz
-    )
+  stopMHz.value =
+    preset.finMHz
+
+  await applyConfig()
 }
 
 onMounted(
@@ -363,7 +329,6 @@ onMounted(
 .controls {
 
   background: #181818;
-
   border: 1px solid #333;
 
   padding: 15px;
@@ -379,7 +344,7 @@ onMounted(
 
   flex-wrap: wrap;
 
-  margin-bottom: 16px;
+  margin-bottom: 15px;
 }
 
 .mode-selector {
@@ -398,7 +363,7 @@ onMounted(
   grid-template-columns:
     repeat(
       auto-fit,
-      minmax(220px, 1fr)
+      minmax(220px,1fr)
     );
 
   gap: 12px;

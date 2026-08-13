@@ -1,5 +1,7 @@
 <template>
 
+  <AppHeader />
+
   <div class="container">
 
     <h1>
@@ -65,6 +67,9 @@ import {
   useSpectrumTools,
 } from "./composables/useSpectrumTools"
 
+import AppHeader
+from "./components/AppHeader.vue"
+
 const {
   spectrum,
   connect,
@@ -108,3 +113,25 @@ onMounted(() => {
 })
 
 </script>
+
+<style>
+
+body {
+
+  margin: 0;
+
+  background:
+    var(--sncte-background);
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+}
+
+.container {
+
+  padding: 20px;
+}
+
+</style>
