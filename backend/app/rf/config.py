@@ -7,6 +7,8 @@ class SpectrumConfig:
 
         self.lock = Lock()
 
+        self.version = 1
+
         self.center_frequency_hz = 124.650e6
 
         self.span_hz = 5e6

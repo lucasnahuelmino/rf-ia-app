@@ -10,11 +10,6 @@
       BB60C Real Time Spectrum
     </p>
 
-    <SpectrumCanvas
-      v-if="trace"
-      :trace="trace"
-    />
-
     <SpectrumControls />
 
     <SpectrumCanvas

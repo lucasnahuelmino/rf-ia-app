@@ -55,4 +55,6 @@ class ConfigService:
                 config.reference_level_dbm
             )
 
+            spectrum_config.version += 1
+
         return self.get_config()

@@ -3,6 +3,7 @@ import time
 
 from app.devices.bb60c.adapter import BB60CAdapter
 from app.devices.bb60c.models import SweepConfiguration
+
 from app.rf.config import spectrum_config
 
 from .state import spectrum_state
@@ -13,7 +14,6 @@ class SpectrumWorker:
     def __init__(self):
 
         self._thread = None
-
         self._running = False
 
     def start(self):
@@ -38,32 +38,51 @@ class SpectrumWorker:
 
         device = BB60CAdapter()
 
+        last_config_version = -1
+
         try:
 
             device.connect()
 
-            config = SweepConfiguration(
-                center_frequency_hz=
-                    spectrum_config.center_frequency_hz,
-
-                span_hz=
-                    spectrum_config.span_hz,
-
-                rbw_hz=
-                    spectrum_config.rbw_hz,
-
-                vbw_hz=
-                    spectrum_config.vbw_hz,
-
-                reference_level_dbm=
-                    spectrum_config.reference_level_dbm,
-            )
-
-            device.configure_sweep(config)
-
-            device.start_sweep()
-
             while self._running:
+
+                current_version = (
+                    spectrum_config.version
+                )
+
+                if current_version != last_config_version:
+
+                    config = SweepConfiguration(
+                        center_frequency_hz=
+                            spectrum_config.center_frequency_hz,
+
+                        span_hz=
+                            spectrum_config.span_hz,
+
+                        rbw_hz=
+                            spectrum_config.rbw_hz,
+
+                        vbw_hz=
+                            spectrum_config.vbw_hz,
+
+                        reference_level_dbm=
+                            spectrum_config.reference_level_dbm,
+                    )
+
+                    print(
+                        "[SpectrumWorker] "
+                        "Applying new configuration..."
+                    )
+
+                    device.configure_sweep(
+                        config
+                    )
+
+                    device.start_sweep()
+
+                    last_config_version = (
+                        current_version
+                    )
 
                 trace = device.get_trace()
 
