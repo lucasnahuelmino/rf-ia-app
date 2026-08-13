@@ -4,6 +4,7 @@
     ref="canvasRef"
     width="1400"
     height="700"
+    @mousemove="onMouseMove"
   />
 
 </template>
@@ -32,8 +33,34 @@ const props = defineProps({
 const canvasRef =
   ref<HTMLCanvasElement | null>(null)
 
+const cursorX =
+  ref<number | null>(null)
+
+const cursorY =
+  ref<number | null>(null)
+
 const DBM_TOP = 0
 const DBM_BOTTOM = -130
+
+function onMouseMove(
+  event: MouseEvent,
+) {
+
+  const canvas =
+    canvasRef.value
+
+  if (!canvas)
+    return
+
+  const rect =
+    canvas.getBoundingClientRect()
+
+  cursorX.value =
+    event.clientX - rect.left
+
+  cursorY.value =
+    event.clientY - rect.top
+}
 
 function dbmToY(
   power: number,
@@ -56,6 +83,24 @@ function dbmToY(
   )
 }
 
+function yToDbm(
+  y: number,
+  height: number,
+) {
+
+  return (
+    DBM_BOTTOM +
+    (
+      (height - y)
+      / height
+    )
+    *
+    (
+      DBM_TOP - DBM_BOTTOM
+    )
+  )
+}
+
 function drawGrid(
   ctx: CanvasRenderingContext2D,
   width: number,
@@ -63,7 +108,6 @@ function drawGrid(
 ) {
 
   ctx.strokeStyle = "#2a2a2a"
-
   ctx.lineWidth = 1
 
   for (let i = 0; i <= 10; i++) {
@@ -101,7 +145,6 @@ function drawDbmScale(
 ) {
 
   ctx.fillStyle = "#bbbbbb"
-
   ctx.font = "12px monospace"
 
   for (let i = 0; i <= 13; i++) {
@@ -140,7 +183,8 @@ function drawFrequencyLabels(
 
   ctx.fillStyle = "#ffffff"
 
-  ctx.font = "13px monospace"
+  ctx.font =
+    "13px monospace"
 
   ctx.fillText(
     `START ${startMHz.toFixed(3)} MHz`,
@@ -150,13 +194,13 @@ function drawFrequencyLabels(
 
   ctx.fillText(
     `CENTER ${centerMHz.toFixed(3)} MHz`,
-    width / 2 - 80,
+    width / 2 - 90,
     height - 10,
   )
 
   ctx.fillText(
     `STOP ${stopMHz.toFixed(3)} MHz`,
-    width - 190,
+    width - 200,
     height - 10,
   )
 }
@@ -168,22 +212,19 @@ function drawTrace(
   height: number,
 ) {
 
-  const len =
-    trace.length
-
-  if (!len)
+  if (!trace.length)
     return
 
   ctx.beginPath()
 
   for (
     let i = 0;
-    i < len;
+    i < trace.length;
     i++
   ) {
 
     const x =
-      (i / len)
+      (i / trace.length)
       * width
 
     const y =
@@ -194,17 +235,11 @@ function drawTrace(
 
     if (i === 0) {
 
-      ctx.moveTo(
-        x,
-        y,
-      )
+      ctx.moveTo(x, y)
 
     } else {
 
-      ctx.lineTo(
-        x,
-        y,
-      )
+      ctx.lineTo(x, y)
     }
   }
 
@@ -219,27 +254,90 @@ function drawLegend(
   ctx.font = "13px monospace"
 
   ctx.fillStyle = "#00ff55"
-
   ctx.fillText(
     "LIVE",
-    width - 130,
+    width - 140,
     20,
   )
 
   ctx.fillStyle = "#ff8800"
-
   ctx.fillText(
     "MAX HOLD",
-    width - 130,
+    width - 140,
     40,
   )
 
   ctx.fillStyle = "#00aaff"
-
   ctx.fillText(
     "AVERAGE",
-    width - 130,
+    width - 140,
     60,
+  )
+}
+
+function drawCursor(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+) {
+
+  if (
+    cursorX.value === null
+  ) return
+
+  const snapshot =
+    props.snapshot as any
+
+  ctx.strokeStyle = "#666"
+
+  ctx.beginPath()
+
+  ctx.moveTo(
+    cursorX.value,
+    0,
+  )
+
+  ctx.lineTo(
+    cursorX.value,
+    height,
+  )
+
+  ctx.stroke()
+
+  const ratio =
+    cursorX.value / width
+
+  const cursorFrequencyHz =
+    snapshot.start_frequency_hz
+    +
+    (
+      ratio
+      *
+      (
+        snapshot.stop_frequency_hz
+        -
+        snapshot.start_frequency_hz
+      )
+    )
+
+  const cursorDbm =
+    yToDbm(
+      cursorY.value ?? 0,
+      height,
+    )
+
+  ctx.fillStyle = "#ffffff"
+
+  ctx.fillText(
+    `CURSOR ${(cursorFrequencyHz / 1e6).toFixed(3)} MHz`,
+    width - 350,
+    90,
+  )
+
+  ctx.fillText(
+    `${cursorDbm.toFixed(2)} dBm`,
+    width - 350,
+    110,
   )
 }
 
@@ -258,10 +356,10 @@ function drawSpectrum(
   if (!trace)
     return
 
-  let peakIndex = 0
-
   let peakValue =
     Number.NEGATIVE_INFINITY
+
+  let peakIndex = 0
 
   trace.forEach(
     (
@@ -274,7 +372,6 @@ function drawSpectrum(
       ) {
 
         peakValue = value
-
         peakIndex = index
       }
     }
@@ -285,9 +382,7 @@ function drawSpectrum(
     props.averageTrace
   ) {
 
-    ctx.strokeStyle =
-      "#00aaff"
-
+    ctx.strokeStyle = "#00aaff"
     ctx.lineWidth = 1
 
     drawTrace(
@@ -303,9 +398,7 @@ function drawSpectrum(
     props.maxHold
   ) {
 
-    ctx.strokeStyle =
-      "#ff8800"
-
+    ctx.strokeStyle = "#ff8800"
     ctx.lineWidth = 1
 
     drawTrace(
@@ -316,9 +409,7 @@ function drawSpectrum(
     )
   }
 
-  ctx.strokeStyle =
-    "#00ff55"
-
+  ctx.strokeStyle = "#00ff55"
   ctx.lineWidth = 2
 
   drawTrace(
@@ -343,26 +434,26 @@ function drawSpectrum(
 
   ctx.fillRect(
     peakX - 3,
-    peakY - 18,
+    peakY - 22,
     6,
-    18,
+    22,
   )
 
   ctx.beginPath()
 
   ctx.moveTo(
     peakX,
-    peakY - 22,
+    peakY - 26,
   )
 
   ctx.lineTo(
     peakX - 8,
-    peakY - 35,
+    peakY - 40,
   )
 
   ctx.lineTo(
     peakX + 8,
-    peakY - 35,
+    peakY - 40,
   )
 
   ctx.closePath()
@@ -458,14 +549,18 @@ function draw() {
     width,
     height,
   )
+
+  drawCursor(
+    ctx,
+    width,
+    height,
+  )
 }
 
 watch(
   () => props.snapshot,
   draw,
-  {
-    deep: true,
-  },
+  { deep: true },
 )
 
 watch(
