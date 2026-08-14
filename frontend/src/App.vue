@@ -34,6 +34,10 @@
       :average-trace="averageTrace"
     />
 
+    <MarkerPanel />
+
+    <MarkerTable />
+
   </div>
 
 </template>
@@ -69,6 +73,12 @@ import {
 
 import AppHeader
 from "./components/AppHeader.vue"
+
+import MarkerPanel
+  from "./components/MarkerPanel.vue"
+
+import MarkerTable
+  from "./components/MarkerTable.vue"
 
 const {
   spectrum,

@@ -1,22 +1,63 @@
 import { ref } from "vue"
 
-export const marker1 =
-  ref<number | null>(null)
+export interface Marker {
 
-export const marker2 =
-  ref<number | null>(null)
+  enabled: boolean
+
+  frequencyHz: number | null
+
+  powerDbm: number | null
+}
+
+export const markers =
+  ref<Marker[]>([
+    {
+      enabled: false,
+      frequencyHz: null,
+      powerDbm: null,
+    },
+    {
+      enabled: false,
+      frequencyHz: null,
+      powerDbm: null,
+    },
+    {
+      enabled: false,
+      frequencyHz: null,
+      powerDbm: null,
+    },
+    {
+      enabled: false,
+      frequencyHz: null,
+      powerDbm: null,
+    },
+    {
+      enabled: false,
+      frequencyHz: null,
+      powerDbm: null,
+    },
+  ])
 
 export function useMarkers() {
 
   function clearMarkers() {
 
-    marker1.value = null
-    marker2.value = null
+    markers.value.forEach(
+      marker => {
+
+        marker.enabled = false
+
+        marker.frequencyHz = null
+
+        marker.powerDbm = null
+      }
+    )
   }
 
   return {
-    marker1,
-    marker2,
+
+    markers,
+
     clearMarkers,
   }
 }

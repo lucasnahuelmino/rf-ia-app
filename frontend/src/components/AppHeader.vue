@@ -18,8 +18,7 @@
 
     </div>
 
-    "
-      alt="ENACOM"
+    /enacom-logo.png alt="ENACOM"
       class="logo"
     />
 
