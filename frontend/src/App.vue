@@ -33,7 +33,10 @@
         title="Herramientas del Analizador"
         :defaultOpen="true"
       >
-        <AnalyzerTools />
+        <AnalyzerTools
+          @peakSearch="peakSearch"
+          @centerMarker="centerOnMarker"
+        />
       </CollapsiblePanel>
 
     </div>
@@ -71,8 +74,9 @@ import MarkerTable
   import AnalyzerTools
   from "./components/AnalyzerTools.vue"
 
-  import DevicePanel
-  from "./components/DevicePanel.vue"
+import {
+  markers,
+} from "./composables/useMarkers"
 
   import CollapsiblePanel
   from "./components/CollapsiblePanel.vue"
@@ -85,6 +89,87 @@ const {
 const snapshot = computed(
   () => spectrum.value
 )
+
+function peakSearch() {
+
+  if (!snapshot.value)
+    return
+
+  const trace =
+    snapshot.value.trace
+
+  let peakIndex = 0
+
+  let peakValue =
+    Number.NEGATIVE_INFINITY
+
+  trace.forEach(
+    (
+      value: number,
+      index: number,
+    ) => {
+
+      if (value > peakValue) {
+
+        peakValue = value
+        peakIndex = index
+      }
+    }
+  )
+
+  const frequencyHz =
+    snapshot.value.start_frequency_hz
+    +
+    (
+      peakIndex
+      *
+      snapshot.value.bin_size_hz
+    )
+
+  markers.value[0].enabled = true
+
+  markers.value[0].selected = true
+
+  markers.value[0].frequencyHz =
+    frequencyHz
+
+  markers.value[0].powerDbm =
+    peakValue
+}
+
+async function centerOnMarker() {
+
+  const marker =
+    markers.value[0]
+
+  if (!marker.frequencyHz)
+    return
+
+  await fetch(
+    "http://127.0.0.1:8000/spectrum/config",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+
+      body: JSON.stringify({
+        center_frequency_hz:
+          marker.frequencyHz,
+
+        span_hz:
+          snapshot.value.span_hz,
+
+        rbw_hz: 10000,
+
+        vbw_hz: 10000,
+
+        reference_level_dbm: 0,
+      }),
+    }
+  )
+}
 
 onMounted(() => {
   connect()

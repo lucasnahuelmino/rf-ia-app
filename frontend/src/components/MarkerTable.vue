@@ -69,13 +69,12 @@
       class="delta"
     >
 
-      ΔF:
+      <b>ΔF:</b>
 
       {{
         (
           Math.abs(
-            markers[1].frequencyHz
-            -
+            markers[1].frequencyHz -
             markers[0].frequencyHz
           ) / 1000
         ).toFixed(3)
@@ -83,9 +82,25 @@
 
       kHz
 
-    </div>
+      <br>
 
-  </div>
+      <b>ΔP:</b>
+
+      {{
+        Math.abs(
+          (
+            markers[1].powerDbm ?? 0
+          )
+          -
+          (
+            markers[0].powerDbm ?? 0
+          )
+        ).toFixed(2)
+      }}
+
+      dB
+
+    </div>
 
 </template>
 
