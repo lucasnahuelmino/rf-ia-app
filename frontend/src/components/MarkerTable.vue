@@ -71,12 +71,15 @@
 
       <div>
 
-        <strong>Δ Frecuencia:</strong>
+        <strong>
+          Δ Frecuencia:
+        </strong>
 
         {{
           (
             Math.abs(
-              markers[1].frequencyHz -
+              markers[1].frequencyHz
+              -
               markers[0].frequencyHz
             ) / 1000
           ).toFixed(3)
@@ -88,7 +91,9 @@
 
       <div>
 
-        <strong>Δ Nivel:</strong>
+        <strong>
+          Δ Nivel:
+        </strong>
 
         {{
           Math.abs(
@@ -106,7 +111,7 @@
 
       </div>
 
-    </div>
+</div>
   </div>
 
 </template>

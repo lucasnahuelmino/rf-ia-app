@@ -98,6 +98,9 @@ function peakSearch() {
   const trace =
     snapshot.value.trace
 
+  if (!trace?.length)
+    return
+
   let peakIndex = 0
 
   let peakValue =
@@ -112,6 +115,7 @@ function peakSearch() {
       if (value > peakValue) {
 
         peakValue = value
+
         peakIndex = index
       }
     }
@@ -149,12 +153,14 @@ async function centerOnMarker() {
     "http://127.0.0.1:8000/spectrum/config",
     {
       method: "POST",
+
       headers: {
         "Content-Type":
           "application/json",
       },
 
       body: JSON.stringify({
+
         center_frequency_hz:
           marker.frequencyHz,
 
