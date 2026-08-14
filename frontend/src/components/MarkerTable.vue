@@ -19,9 +19,9 @@
       <tbody>
 
         <tr
-          v-for="(marker,index) in markers"
-          :key="index"
-        >
+            v-for="(marker,index) in markers.filter(m => m.enabled)"
+            :key="index"
+            >
 
           <td>
 
@@ -107,6 +107,7 @@
       </div>
 
     </div>
+  </div>
 
 </template>
 
