@@ -153,100 +153,63 @@ const averageSweeps = ref(20)
 <style scoped>
 
 .panel {
-
   background: white;
-
   border: 1px solid var(--sncte-border);
-
   border-radius: var(--radius);
-
   box-shadow: var(--shadow);
-
   padding: 5px;
-
   margin-bottom: 15px;
 }
 
-summary {
-
-  cursor: pointer;
-
-  font-weight: 600;
-
-  color: var(--sncte-blue-dark);
-}
-
 .tools-container {
-
   display: flex;
-
   flex-wrap: wrap;
-
   align-items: center;
-
   gap: 8px;
-
   margin-top: 1px;
 }
 
 .marker-group {
-
   display: flex;
-
   gap: 4px;
 }
 
 .tool-button {
-
-  min-width: 48px;
-
+  min-width: 42px;
+  font-size: 12px;
+  height: 28px;
   border-radius: 6px;
-
   border: 1px solid var(--sncte-border);
-
   background: white;
 }
 
 .tool-button.active {
-
   background: var(--sncte-blue);
-
   color: white;
 }
 
 .tool-check {
-
   display: flex;
-
   align-items: center;
-
   gap: 4px;
-
   white-space: nowrap;
 }
 
 .small-input {
-
   width: 60px;
-
   text-align: center;
 }
 
 .action-button {
-
   background: var(--sncte-blue);
-
   color: white;
-
   border: none;
-
+  font-size: 12px;
   border-radius: 8px;
-
-  padding: 8px 12px;
+  padding: 6px 10px;
 }
 
 .action-button:hover {
-
   background: var(--sncte-blue-light);
 }
 

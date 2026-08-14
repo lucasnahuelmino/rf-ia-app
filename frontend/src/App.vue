@@ -2,46 +2,50 @@
 
   <AppHeader />
 
-  <div class="container">
+  <div class="layout">
 
-    <CollapsiblePanel
-      title="Estado del Instrumento"
-    >
+    <div class="left-panel">
 
-      <DevicePanel />
+      <SpectrumStatus
+        v-if="snapshot"
+        :snapshot="snapshot"
+      />
 
-    </CollapsiblePanel>
+      <SpectrumCanvas
+        v-if="snapshot"
+        :snapshot="snapshot"
+      />
 
-    <SpectrumControls />
+      <CollapsiblePanel
+        title="Tabla de Markers"
+        :defaultOpen="false"
+      >
+        <MarkerTable />
+      </CollapsiblePanel>
 
-    <SpectrumStatus
-      v-if="snapshot"
-      :snapshot="snapshot"
-    />
+    </div>
 
-    <CollapsiblePanel
-      title="Herramientas del Analizador"
-      :defaultOpen="true"
-    >
+    <div class="right-panel">
 
-      <AnalyzerTools />
+      <CollapsiblePanel
+        title="Estado del Instrumento"
+        :default-open="false"
+      >
+        <DevicePanel />
+      </CollapsiblePanel>
 
-    </CollapsiblePanel>
+      <SpectrumControls />
 
-    <SpectrumCanvas
-      v-if="snapshot"
-      :snapshot="snapshot"
-    />
+      <CollapsiblePanel
+        title="Herramientas del Analizador"
+        :defaultOpen="true"
+      >
+        <AnalyzerTools />
+      </CollapsiblePanel>
 
-    <CollapsiblePanel
-      title="Tabla de Markers"
-    >
+    </div>
 
-      <MarkerTable />
-
-    </CollapsiblePanel>
-
-  </div>
+</div>
 
 </template>
 
@@ -74,6 +78,9 @@ import MarkerTable
   import AnalyzerTools
   from "./components/AnalyzerTools.vue"
 
+  import DevicePanel
+  from "./components/DevicePanel.vue"
+
   import CollapsiblePanel
   from "./components/CollapsiblePanel.vue"
 
@@ -104,8 +111,25 @@ body {
     sans-serif;
 }
 
-.container {
+.layout {
   padding: 20px;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.left-panel {
+  flex: 1;
+  min-width: 0;
+}
+
+.right-panel {
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  position: sticky;
+  top: 20px;
 }
 
 </style>

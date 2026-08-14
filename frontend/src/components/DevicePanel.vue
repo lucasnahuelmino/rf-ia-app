@@ -140,27 +140,19 @@ defineProps({
 }
 
 .grid {
-
   display: grid;
-
   grid-template-columns:
     repeat(
-      auto-fit,
-      minmax(160px,1fr)
+      2,
+      minmax(120px,1fr)
     );
-
-  gap: 12px;
+  gap: 8px;
 }
 
 .card {
-
-  background: #f8fbff;
-
-  border: 1px solid var(--sncte-border);
-
-  border-radius: 10px;
-
-  padding: 12px;
+  padding: 8px;
+  border-radius: 8px;
+  background: #f6f9ff;
 }
 
 .label {

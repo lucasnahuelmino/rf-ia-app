@@ -2,8 +2,6 @@
 
   <div class="controls">
 
-    <h3>Configuración RF</h3>
-
     <SpectrumPresetSelector
       @presetLoaded="onPresetLoaded"
     />
@@ -316,45 +314,28 @@ onMounted(
 <style scoped>
 
 .controls {
-
   background: white;
-
   border: 1px solid var(--sncte-border);
-
   border-radius: var(--radius);
-
   box-shadow: var(--shadow);
-
   padding: 20px;
-
   margin-bottom: 20px;
 }
 
 .controls h3 {
-
   margin-top: 0;
-
   margin-bottom: 16px;
-
   color: var(--sncte-blue-dark);
-
   font-size: 20px;
-
   font-weight: 700;
 }
 
 .favoritos {
-
   display: flex;
-
   gap: 8px;
-
   flex-wrap: wrap;
-
   padding-bottom: 12px;
-
   margin-bottom: 16px;
-
   border-bottom: 1px solid var(--sncte-border);
 }
 
@@ -369,110 +350,71 @@ onMounted(
   color: var(--sncte-blue-dark);
   border: 1px solid var(--sncte-border);
   border-radius: 20px;
-  padding: 8px 14px;
+  padding: 3px 8px;
   font-weight: 600;
+  font-size: 11px;
   transition: all .2s ease;
 }
 
 .favoritos button:hover {
-
   background: var(--sncte-blue);
-
   color: white;
 }
 
 .mode-selector {
-
   display: flex;
-
   gap: 20px;
-
   margin-bottom: 16px;
-
   padding: 12px;
-
   background: #f8fbff;
-
   border: 1px solid var(--sncte-border);
-
   border-radius: 10px;
 }
 
 .mode-selector label {
-
   flex-direction: row;
-
   align-items: center;
-
   gap: 8px;
-
   cursor: pointer;
-
   color: var(--sncte-blue-dark);
-
   font-weight: 500;
 }
 
 .grid {
-
-  display: grid;
-
-  grid-template-columns:
-    repeat(
-      7,
-      minmax(110px,1fr)
-    );
-
-  gap: 10px;
-
-  align-items: end;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 label {
-
   display: flex;
-
   flex-direction: column;
-
   gap: 6px;
 }
 
 span {
-
   color: var(--sncte-blue-dark);
-
-  font-size: 13px;
-
+  font-size: 11px;
   font-weight: 600;
 }
 
 input,
 select {
 
-  height: 40px;
-
-  padding: 0 12px;
-
+  height: 28px;
+  padding: 0 8px;
   background: white;
-
   color: var(--sncte-text);
-
   border: 1px solid var(--sncte-border);
-
   border-radius: 8px;
-
-  font-size: 14px;
-
+  font-size: 12px;
   transition: all .2s ease;
 }
 
 input:focus,
 select:focus {
-
   outline: none;
-
   border-color: var(--sncte-blue);
-
   box-shadow:
     0 0 0 3px
     rgba(
@@ -484,47 +426,34 @@ select:focus {
 }
 
 input[readonly] {
-
   background: #f6f8fc;
-
   color: var(--sncte-blue-dark);
-
   font-weight: 600;
 }
 
 button {
-
   cursor: pointer;
-
   border: none;
-
   transition: all .2s ease;
 }
 
 .apply {
-
   background: var(--sncte-blue);
-
   color: white;
-
   border-radius: 10px;
-
   padding: 12px 18px;
-
-  font-size: 14px;
-
+  width: 100%;
+  height: 32px;
+  font-size: 13px;
   font-weight: 600;
 }
 
 .apply:hover {
-
   background: var(--sncte-blue-light);
-
   transform: translateY(-1px);
 }
 
 .apply:active {
-
   transform: translateY(0px);
 }
 </style>

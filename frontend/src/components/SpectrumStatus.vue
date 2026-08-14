@@ -1,40 +1,65 @@
 <template>
 
-  <div class="status-panel">
+  <div class="status-bar">
 
-    <div class="card">
-      <span class="label">DEVICE</span>
-      <span class="value">
-        CONNECTED
+    <div class="item">
+
+      <span class="label">
+        Equipo
       </span>
+
+      <span class="value">
+        BB60C
+      </span>
+
     </div>
 
-    <div class="card">
-      <span class="label">CENTER</span>
+    <div class="item">
+
+      <span class="label">
+        Centro
+      </span>
+
       <span class="value">
         {{ centerMHz }}
       </span>
+
     </div>
 
-    <div class="card">
-      <span class="label">SPAN</span>
+    <div class="item">
+
+      <span class="label">
+        Span
+      </span>
+
       <span class="value">
         {{ spanMHz }}
       </span>
+
     </div>
 
-    <div class="card">
-      <span class="label">PEAK</span>
+    <div class="item">
+
+      <span class="label">
+        Peak
+      </span>
+
       <span class="value">
         {{ peakMHz }}
       </span>
+
     </div>
 
-    <div class="card">
-      <span class="label">LEVEL</span>
+    <div class="item">
+
+      <span class="label">
+        Nivel
+      </span>
+
       <span class="value">
         {{ peakLevel }}
       </span>
+
     </div>
 
   </div>
@@ -140,49 +165,37 @@ const peakLevel = computed(() => {
 
 <style scoped>
 
-.status-panel {
-
+.status-bar {
   display: flex;
-
-  gap: 12px;
-
-  margin-bottom: 15px;
-
+  gap: 8px;
   flex-wrap: wrap;
+  background: white;
+  border: 1px solid var(--sncte-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 8px;
+  margin-bottom: 10px;
 }
 
-.card {
-
-  background: white;
-
-  border-radius: 12px;
-
+.item {
+  background: #f6f9ff;
   border: 1px solid var(--sncte-border);
-
-  box-shadow: var(--shadow);
-
-  min-width: 180px;
-
-  padding: 12px;
+  border-radius: 8px;
+  padding: 6px 10px;
+  min-width: 120px;
 }
 
 .label {
-
+  font-size: 10px;
+  text-transform: uppercase;
+  color: #6a7b98;
   display: block;
-
-  color: #888;
-
-  font-size: 12px;
 }
 
 .value {
-
-  color:
-    var(--sncte-blue);
-
-  font-weight: bold;
-
-  font-size: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--sncte-blue-dark);
 }
 
 </style>
