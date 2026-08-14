@@ -31,10 +31,6 @@
     <SpectrumCanvas
       v-if="snapshot"
       :snapshot="snapshot"
-      :show-max-hold="showMaxHold"
-      :show-average="showAverage"
-      :max-hold="maxHoldTrace"
-      :average-trace="averageTrace"
     />
 
     <CollapsiblePanel
@@ -54,8 +50,6 @@
 import {
   computed,
   onMounted,
-  watch,
-  ref,
 } from "vue"
 
 import SpectrumCanvas
@@ -70,7 +64,6 @@ import SpectrumStatus
 import {
   useSpectrum,
 } from "./composables/useSpectrum"
-
 
 import AppHeader
 from "./components/AppHeader.vue"
@@ -91,28 +84,6 @@ const {
 
 const snapshot = computed(
   () => spectrum.value
-)
-
-const showMaxHold =
-  ref(false)
-
-const showAverage =
-  ref(false)
-
-watch(
-  spectrum,
-  (value) => {
-    if (
-      value?.trace
-    ) {
-      update(
-        value.trace
-      )
-    }
-  },
-  {
-    deep: true,
-  },
 )
 
 onMounted(() => {
