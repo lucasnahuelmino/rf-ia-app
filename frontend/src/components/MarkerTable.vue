@@ -19,26 +19,20 @@
       <tbody>
 
         <tr
-            v-for="(marker,index) in markers.filter(m => m.enabled)"
-            :key="index"
-            >
+          v-for="marker in markers.filter(m => m.enabled)"
+          :key="marker.id"
+        >
 
           <td>
-
-            M{{ index + 1 }}
-
+            {{ marker.id }}
           </td>
 
           <td>
 
             {{
               marker.frequencyHz
-              ?
-              (
-                marker.frequencyHz / 1e6
-              ).toFixed(3) + " MHz"
-              :
-              "-"
+                ? (marker.frequencyHz / 1e6).toFixed(3) + " MHz"
+                : "-"
             }}
 
           </td>
@@ -47,10 +41,8 @@
 
             {{
               marker.powerDbm !== null
-              ?
-              marker.powerDbm.toFixed(2) + " dBm"
-              :
-              "-"
+                ? marker.powerDbm.toFixed(2) + " dBm"
+                : "-"
             }}
 
           </td>
@@ -62,10 +54,7 @@
     </table>
 
     <div
-      v-if="
-        markers[0].frequencyHz &&
-        markers[1].frequencyHz
-      "
+      v-if="activeMarkers.length >= 2"
       class="delta"
     >
 
@@ -78,10 +67,11 @@
         {{
           (
             Math.abs(
-              markers[1].frequencyHz
+              activeMarkers[1].frequencyHz!
               -
-              markers[0].frequencyHz
-            ) / 1000
+              activeMarkers[0].frequencyHz!
+            )
+            / 1000
           ).toFixed(3)
         }}
 
@@ -98,11 +88,11 @@
         {{
           Math.abs(
             (
-              markers[1].powerDbm ?? 0
+              activeMarkers[1].powerDbm ?? 0
             )
             -
             (
-              markers[0].powerDbm ?? 0
+              activeMarkers[0].powerDbm ?? 0
             )
           ).toFixed(2)
         }}
@@ -111,12 +101,15 @@
 
       </div>
 
-</div>
+    </div>
+
   </div>
 
 </template>
 
 <script setup lang="ts">
+
+import { computed } from "vue"
 
 import {
   useMarkers,
@@ -125,6 +118,15 @@ import {
 const {
   markers,
 } = useMarkers()
+
+const activeMarkers = computed(
+  () =>
+    markers.value.filter(
+      marker =>
+        marker.enabled &&
+        marker.frequencyHz !== null
+    )
+)
 
 </script>
 

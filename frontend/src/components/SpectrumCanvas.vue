@@ -104,7 +104,8 @@ function onCanvasClick(
 
   const selected =
     markers.value.find(
-      marker => marker.selected
+      marker =>
+        marker.selected
     )
 
   if (!selected)
@@ -117,6 +118,8 @@ function onCanvasClick(
 
   draw()
 }
+
+
 
 function dbmToY(
   power: number,
@@ -373,13 +376,11 @@ function drawCursor(
 
   if (
     cursorX.value === null
-  ) return
+  ) {
+    return
+  }
 
-  const snapshot =
-    props.snapshot as any
-
-  ctx.strokeStyle =
-    "#666"
+  ctx.strokeStyle = "#666"
 
   ctx.beginPath()
 
@@ -394,43 +395,6 @@ function drawCursor(
   )
 
   ctx.stroke()
-
-  const ratio =
-    cursorX.value / width
-
-  const freqHz =
-    snapshot.start_frequency_hz
-    +
-    (
-      ratio
-      *
-      (
-        snapshot.stop_frequency_hz
-        -
-        snapshot.start_frequency_hz
-      )
-    )
-
-  const trace =
-    snapshot.trace
-
-  const binIndex =
-    Math.min(
-      trace.length - 1,
-      Math.max(
-        0,
-        Math.round(
-          ratio * trace.length
-        )
-      )
-    )
-
-  const dbm =
-    trace[binIndex]
-
-  ctx.fillStyle =
-    "#ffffff"
-
 }
 
 function drawMarkers(
@@ -442,20 +406,20 @@ function drawMarkers(
   const snapshot =
     props.snapshot as any
 
+  const trace =
+    snapshot.trace
+
+  if (!trace)
+    return
+
   markers.value.forEach(
-    (
-      marker,
-      index,
-    ) => {
+    marker => {
 
       if (
         !marker.frequencyHz
-      ) return
-      const trace =
-        snapshot.trace
-
-      if (!trace)
+      ) {
         return
+      }
 
       const ratio =
         (
@@ -482,13 +446,15 @@ function drawMarkers(
         )
 
       marker.powerDbm =
-        trace[binIndex]  
+        trace[binIndex]
 
       const x =
         ratio * width
 
       ctx.strokeStyle =
-        "#fbbf24"
+        marker.id === "CENTRO"
+          ? "#22c55e"
+          : "#fbbf24"
 
       ctx.lineWidth = 1
 
@@ -507,17 +473,21 @@ function drawMarkers(
       ctx.stroke()
 
       ctx.fillStyle =
-        "#fbbf24"
+        marker.id === "CENTRO"
+          ? "#22c55e"
+          : "#fbbf24"
+
+      ctx.font =
+        "12px monospace"
 
       ctx.fillText(
-        `M${index + 1}`,
+        marker.id,
         x + 4,
         40,
       )
     }
   )
 }
-
 function drawSpectrum(
   ctx: CanvasRenderingContext2D,
   width: number,
@@ -544,11 +514,10 @@ function drawSpectrum(
       index: number,
     ) => {
 
-      if (
-        value > peakValue
-      ) {
+      if (value > peakValue) {
 
         peakValue = value
+
         peakIndex = index
       }
     }
@@ -602,8 +571,19 @@ function drawSpectrum(
     height,
   )
 
+  const peakFrequencyHz =
+    snapshot.start_frequency_hz
+    +
+    (
+      peakIndex
+      *
+      snapshot.bin_size_hz
+    )
+
   const peakX =
-    (peakIndex / trace.length)
+    (
+      peakIndex / trace.length
+    )
     * width
 
   const peakY =
@@ -622,8 +602,11 @@ function drawSpectrum(
     22,
   )
 
+  ctx.font =
+    "13px monospace"
+
   ctx.fillText(
-    `PEAK ${peakValue.toFixed(2)} dBm`,
+    `PEAK ${(peakFrequencyHz / 1e6).toFixed(3)} MHz | ${peakValue.toFixed(2)} dBm`,
     20,
     25,
   )

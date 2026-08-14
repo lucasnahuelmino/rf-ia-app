@@ -63,8 +63,6 @@ import {
 import AppHeader
 from "./components/AppHeader.vue"
 
-import MarkerTable
-  from "./components/MarkerTable.vue"
 
   import AnalyzerTools
   from "./components/AnalyzerTools.vue"
