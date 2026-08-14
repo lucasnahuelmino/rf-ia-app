@@ -16,12 +16,7 @@
         :snapshot="snapshot"
       />
 
-      <CollapsiblePanel
-        title="Tabla de Markers"
-        :defaultOpen="false"
-      >
-        <MarkerTable />
-      </CollapsiblePanel>
+      <MarkerBar />
 
     </div>
 
@@ -80,6 +75,10 @@ import {
 
   import CollapsiblePanel
   from "./components/CollapsiblePanel.vue"
+
+import MarkerBar
+  from "./components/MarkerBar.vue"
+
 
 const {
   spectrum,
