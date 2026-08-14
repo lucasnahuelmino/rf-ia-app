@@ -13,7 +13,7 @@
     </p>
 
     <SpectrumControls />
-
+    <AnalyzerTools />
     <SpectrumStatus
       v-if="snapshot"
       :snapshot="snapshot"
@@ -79,6 +79,9 @@ import MarkerPanel
 
 import MarkerTable
   from "./components/MarkerTable.vue"
+
+  import AnalyzerTools
+  from "./components/AnalyzerTools.vue"
 
 const {
   spectrum,

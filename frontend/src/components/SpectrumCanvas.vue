@@ -411,11 +411,22 @@ function drawCursor(
       )
     )
 
-  const dbm =
-    yToDbm(
-      cursorY.value ?? 0,
-      height,
+  const trace =
+    snapshot.trace
+
+  const binIndex =
+    Math.min(
+      trace.length - 1,
+      Math.max(
+        0,
+        Math.round(
+          ratio * trace.length
+        )
+      )
     )
+
+  const dbm =
+    trace[binIndex]
 
   ctx.fillStyle =
     "#ffffff"
@@ -451,6 +462,11 @@ function drawMarkers(
       if (
         !marker.frequencyHz
       ) return
+      const trace =
+        snapshot.trace
+
+      if (!trace)
+        return
 
       const ratio =
         (
@@ -464,6 +480,20 @@ function drawMarkers(
           -
           snapshot.start_frequency_hz
         )
+
+      const binIndex =
+        Math.min(
+          trace.length - 1,
+          Math.max(
+            0,
+            Math.round(
+              ratio * trace.length
+            )
+          )
+        )
+
+      marker.powerDbm =
+        trace[binIndex]  
 
       const x =
         ratio * width
