@@ -4,26 +4,29 @@
 
   <div class="container">
 
-    <h1>
-      RF Monitor
-    </h1>
+    <CollapsiblePanel
+      title="Estado del Instrumento"
+    >
 
-    <p>
-      BB60C Real Time Spectrum
-    </p>
+      <DevicePanel />
+
+    </CollapsiblePanel>
 
     <SpectrumControls />
-    <AnalyzerTools />
+
     <SpectrumStatus
       v-if="snapshot"
       :snapshot="snapshot"
     />
 
-    <SpectrumTools
-      v-model:showMaxHold="showMaxHold"
-      v-model:showAverage="showAverage"
-      @clear="clear"
-    />
+    <CollapsiblePanel
+      title="Herramientas del Analizador"
+      :defaultOpen="true"
+    >
+
+      <AnalyzerTools />
+
+    </CollapsiblePanel>
 
     <SpectrumCanvas
       v-if="snapshot"
@@ -34,9 +37,13 @@
       :average-trace="averageTrace"
     />
 
-    <MarkerPanel />
+    <CollapsiblePanel
+      title="Tabla de Markers"
+    >
 
-    <MarkerTable />
+      <MarkerTable />
+
+    </CollapsiblePanel>
 
   </div>
 
@@ -60,28 +67,22 @@ import SpectrumControls
 import SpectrumStatus
   from "./components/SpectrumStatus.vue"
 
-import SpectrumTools
-  from "./components/SpectrumTools.vue"
-
 import {
   useSpectrum,
 } from "./composables/useSpectrum"
 
-import {
-  useSpectrumTools,
-} from "./composables/useSpectrumTools"
 
 import AppHeader
 from "./components/AppHeader.vue"
-
-import MarkerPanel
-  from "./components/MarkerPanel.vue"
 
 import MarkerTable
   from "./components/MarkerTable.vue"
 
   import AnalyzerTools
   from "./components/AnalyzerTools.vue"
+
+  import CollapsiblePanel
+  from "./components/CollapsiblePanel.vue"
 
 const {
   spectrum,
@@ -91,13 +92,6 @@ const {
 const snapshot = computed(
   () => spectrum.value
 )
-
-const {
-  maxHoldTrace,
-  averageTrace,
-  update,
-  clear,
-} = useSpectrumTools()
 
 const showMaxHold =
   ref(false)

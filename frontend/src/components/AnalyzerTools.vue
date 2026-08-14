@@ -1,11 +1,5 @@
 <template>
-
-  <details class="panel" open>
-
-    <summary>
-      Herramientas del Analizador
-    </summary>
-
+  
     <div class="tools-container">
 
       <div class="marker-group">
@@ -113,7 +107,7 @@
 
     </div>
 
-  </details>
+  
 
 </template>
 
@@ -168,7 +162,7 @@ const averageSweeps = ref(20)
 
   box-shadow: var(--shadow);
 
-  padding: 12px;
+  padding: 5px;
 
   margin-bottom: 15px;
 }
@@ -192,7 +186,7 @@ summary {
 
   gap: 8px;
 
-  margin-top: 12px;
+  margin-top: 1px;
 }
 
 .marker-group {

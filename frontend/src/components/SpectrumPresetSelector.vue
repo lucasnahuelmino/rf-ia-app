@@ -1,55 +1,43 @@
 <template>
 
-  <div class="preset-panel">
+  <div class="preset-selector">
 
-    <h4>Presets RF</h4>
+    <label>
 
-    <div class="grid">
+      <span>Categoría</span>
 
-      <label>
+      <select v-model="categoria">
 
-        <span>Categoría</span>
+        <option
+          v-for="item in categorias"
+          :key="item"
+        >
+          {{ item }}
+        </option>
 
-        <select v-model="categoria">
+      </select>
 
-          <option
-            v-for="item in categorias"
-            :key="item"
-          >
-            {{ item }}
-          </option>
+    </label>
 
-        </select>
+    <label>
 
-      </label>
+      <span>Preset RF</span>
 
-      <label>
+      <select v-model="preset">
 
-        <span>Preset</span>
-
-        <select
-          v-model="preset"
+        <option
+          v-for="item in presets"
+          :key="item.nombre"
+          :value="item.nombre"
         >
 
-          <option
-            v-for="item in presets"
-            :key="item.nombre"
-            :value="item.nombre"
-          >
-            {{ item.nombre }}
-          </option>
+          {{ item.nombre }}
 
-        </select>
+        </option>
 
-      </label>
+      </select>
 
-    </div>
-
-    <button
-      @click="loadPreset"
-    >
-      Cargar Preset
-    </button>
+    </label>
 
   </div>
 
@@ -95,8 +83,7 @@ function loadPreset() {
   const selected =
     presets.value.find(
       p =>
-        p.nombre ===
-        preset.value
+        p.nombre === preset.value
     )
 
   if (!selected)
@@ -104,23 +91,8 @@ function loadPreset() {
 
   emit(
     "presetLoaded",
-    selected,
+    selected
   )
 }
 
 </script>
-
-<style scoped>
-.preset-panel {
-
-  background: #f8fbff;
-
-  border: 1px solid var(--sncte-border);
-
-  border-radius: 12px;
-
-  padding: 16px;
-
-  margin-bottom: 16px;
-}
-</style>

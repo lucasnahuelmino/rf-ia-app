@@ -32,104 +32,96 @@
 
     </div>
 
-    <div class="mode-selector">
-
-      <label>
-        <input
-          v-model="mode"
-          value="center"
-          type="radio"
-        />
-        Centro + Span
-      </label>
-
-      <label>
-        <input
-          v-model="mode"
-          value="range"
-          type="radio"
-        />
-        Inicio + Fin
-      </label>
-
-    </div>
-
     <div class="grid">
 
       <label>
-        <span>Frecuencia Inicial (MHz)</span>
+
+        <span>Inicio (MHz)</span>
 
         <input
           v-model.number="startMHz"
           type="number"
           step="0.001"
         />
+
       </label>
 
       <label>
-        <span>Frecuencia Final (MHz)</span>
+
+        <span>Fin (MHz)</span>
 
         <input
           v-model.number="stopMHz"
           type="number"
           step="0.001"
         />
+
       </label>
 
       <label>
-        <span>Frecuencia Central (MHz)</span>
+
+        <span>Centro (MHz)</span>
 
         <input
           :value="centerMHz.toFixed(3)"
           readonly
         />
+
       </label>
 
       <label>
+
         <span>Span (MHz)</span>
 
         <input
           :value="spanMHz.toFixed(3)"
           readonly
         />
+
       </label>
 
       <label>
+
         <span>RBW (kHz)</span>
 
         <input
           v-model.number="rbwKHz"
           type="number"
         />
+
       </label>
 
       <label>
+
         <span>VBW (kHz)</span>
 
         <input
           v-model.number="vbwKHz"
           type="number"
         />
+
       </label>
 
       <label>
-        <span>Referencia (dBm)</span>
+
+        <span>Ref (dBm)</span>
 
         <input
           v-model.number="config.reference_level_dbm"
           type="number"
         />
+
       </label>
-
+      
     </div>
-
-    <button
-      class="apply"
-      @click="applyConfig"
-    >
-      Aplicar Configuración
-    </button>
-
+    <div class="actions">
+      <button
+        class="apply"
+        @click="applyConfig"
+      >
+        Aplicar 
+      </button>
+    </div>
   </div>
 
 </template>
@@ -140,7 +132,6 @@ import {
   computed,
   onMounted,
   reactive,
-  ref,
 } from "vue"
 
 import SpectrumPresetSelector
@@ -151,8 +142,6 @@ import {
   updateSpectrumConfig,
 } from "../services/configService"
 
-const mode =
-  ref("range")
 
 const config = reactive({
 
@@ -369,20 +358,19 @@ onMounted(
   border-bottom: 1px solid var(--sncte-border);
 }
 
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top:12px;
+}
+
 .favoritos button {
-
   background: #edf3ff;
-
   color: var(--sncte-blue-dark);
-
   border: 1px solid var(--sncte-border);
-
   border-radius: 20px;
-
   padding: 8px 14px;
-
   font-weight: 600;
-
   transition: all .2s ease;
 }
 
@@ -431,13 +419,13 @@ onMounted(
 
   grid-template-columns:
     repeat(
-      auto-fit,
-      minmax(220px,1fr)
+      7,
+      minmax(110px,1fr)
     );
 
-  gap: 14px;
+  gap: 10px;
 
-  margin-bottom: 20px;
+  align-items: end;
 }
 
 label {

@@ -2,10 +2,6 @@
 
   <div class="panel">
 
-    <h3>
-      Tabla de Markers
-    </h3>
-
     <table>
 
       <thead>
