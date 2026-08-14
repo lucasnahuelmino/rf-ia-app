@@ -431,17 +431,6 @@ function drawCursor(
   ctx.fillStyle =
     "#ffffff"
 
-  ctx.fillText(
-    `CURSOR ${(freqHz / 1e6).toFixed(3)} MHz`,
-    width - 350,
-    90,
-  )
-
-  ctx.fillText(
-    `${dbm.toFixed(2)} dBm`,
-    width - 350,
-    110,
-  )
 }
 
 function drawMarkers(

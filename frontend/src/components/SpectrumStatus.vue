@@ -17,7 +17,7 @@
     <div class="item">
 
       <span class="label">
-        Centro
+        Frecuencia Central
       </span>
 
       <span class="value">
@@ -29,11 +29,11 @@
     <div class="item">
 
       <span class="label">
-        Span
+        Nivel
       </span>
 
       <span class="value">
-        {{ spanMHz }}
+        {{ centerLevel }}
       </span>
 
     </div>
@@ -53,11 +53,23 @@
     <div class="item">
 
       <span class="label">
-        Nivel
+        Nivel Peak
       </span>
 
       <span class="value">
         {{ peakLevel }}
+      </span>
+
+    </div>
+
+    <div class="item">
+
+      <span class="label">
+        Span
+      </span>
+
+      <span class="value">
+        {{ spanMHz }}
       </span>
 
     </div>
@@ -122,6 +134,7 @@ const peakInfo = computed(() => {
       if (value > peakValue) {
 
         peakValue = value
+
         peakIndex = index
       }
     }
@@ -158,6 +171,50 @@ const peakLevel = computed(() => {
 
   return (
     peakInfo.value.level
+  ).toFixed(2) + " dBm"
+})
+
+const centerLevel = computed(() => {
+
+  if (
+    !props.snapshot ||
+    !props.snapshot.trace
+  ) {
+    return "--"
+  }
+
+  const trace =
+    props.snapshot.trace
+
+  const centerFreq =
+    props.snapshot.center_frequency_hz
+
+  const ratio =
+    (
+      centerFreq
+      -
+      props.snapshot.start_frequency_hz
+    )
+    /
+    (
+      props.snapshot.stop_frequency_hz
+      -
+      props.snapshot.start_frequency_hz
+    )
+
+  const bin =
+    Math.min(
+      trace.length - 1,
+      Math.max(
+        0,
+        Math.round(
+          ratio * trace.length
+        )
+      )
+    )
+
+  return (
+    trace[bin]
   ).toFixed(2) + " dBm"
 })
 
