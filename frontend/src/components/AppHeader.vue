@@ -32,10 +32,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 30px;
+  padding: 10px 10px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  margin-bottom: 20px;
+  margin-bottom: 2px;
 }
 
 .title-container {
@@ -50,7 +50,7 @@
 }
 
 .logo {  
-  height: 90px;
+  height: 80px;
   width: auto;
   object-fit: contain;
 }
@@ -58,22 +58,22 @@
 h1 {
   margin: 0;
   color: var(--sncte-blue-dark);
-  font-size: 38px;
-  font-weight: 700;
+  font-size: 35px;
+  font-weight: 600;
   line-height: 1;
 }
 
 h2 {
   margin: 8px 0 0 0;
   color: var(--sncte-blue);
-  font-size: 15px;
+  font-size: 12px;
   font-weight: 600;
 }
 
 h3 {
   margin: 4px 0 0 0;
   color: #65748b;
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 400;
 }
 

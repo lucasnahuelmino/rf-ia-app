@@ -27,13 +27,6 @@
 
     <div class="right-panel">
 
-      <CollapsiblePanel
-        title="Estado del Instrumento"
-        :default-open="false"
-      >
-        <DevicePanel />
-      </CollapsiblePanel>
-
       <SpectrumControls />
 
       <CollapsiblePanel
@@ -112,9 +105,9 @@ body {
 }
 
 .layout {
-  padding: 20px;
+  padding: 10px;
   display: flex;
-  gap: 20px;
+  gap: 10px;
   align-items: flex-start;
 }
 
