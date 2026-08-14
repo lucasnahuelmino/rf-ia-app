@@ -127,11 +127,8 @@ onMounted(() => {
 <style>
 
 body {
-
   margin: 0;
-
-  background:
-    var(--sncte-background);
+  background: var(--sncte-background);
 
   font-family:
     Arial,
@@ -140,7 +137,6 @@ body {
 }
 
 .container {
-
   padding: 20px;
 }
 

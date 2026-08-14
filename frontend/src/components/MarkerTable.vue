@@ -12,17 +12,9 @@
 
         <tr>
 
-          <th>
-            Marker
-          </th>
-
-          <th>
-            Frecuencia
-          </th>
-
-          <th>
-            Nivel
-          </th>
+          <th>Marker</th>
+          <th>Frecuencia</th>
+          <th>Nivel</th>
 
         </tr>
 
@@ -36,7 +28,9 @@
         >
 
           <td>
+
             M{{ index + 1 }}
+
           </td>
 
           <td>
@@ -46,7 +40,7 @@
               ?
               (
                 marker.frequencyHz / 1e6
-              ).toFixed(3)
+              ).toFixed(3) + " MHz"
               :
               "-"
             }}
@@ -58,7 +52,7 @@
             {{
               marker.powerDbm !== null
               ?
-              marker.powerDbm.toFixed(2)
+              marker.powerDbm.toFixed(2) + " dBm"
               :
               "-"
             }}
@@ -70,6 +64,30 @@
       </tbody>
 
     </table>
+
+    <div
+      v-if="
+        markers[0].frequencyHz &&
+        markers[1].frequencyHz
+      "
+      class="delta"
+    >
+
+      ΔF:
+
+      {{
+        (
+          Math.abs(
+            markers[1].frequencyHz
+            -
+            markers[0].frequencyHz
+          ) / 1000
+        ).toFixed(3)
+      }}
+
+      kHz
+
+    </div>
 
   </div>
 

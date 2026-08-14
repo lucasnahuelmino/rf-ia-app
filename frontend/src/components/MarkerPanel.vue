@@ -6,22 +6,21 @@
       Markers
     </h3>
 
-    <div
-      class="marker-row"
-      v-for="(marker,index) in markers"
-      :key="index"
-    >
+    <div class="marker-container">
 
-      <input
-        type="checkbox"
-        v-model="marker.enabled"
-      />
-
-      <span>
+      <button
+        v-for="(marker,index) in markers"
+        :key="index"
+        class="marker-btn"
+        :class="{
+          active: marker.selected
+        }"
+        @click="selectMarker(index)"
+      >
 
         M{{ index + 1 }}
 
-      </span>
+      </button>
 
     </div>
 
@@ -58,6 +57,45 @@ defineEmits([
 const {
   markers,
   clearMarkers,
+  selectMarker,
 } = useMarkers()
 
 </script>
+
+<style scoped>
+
+.marker-container {
+
+  display: flex;
+
+  gap: 10px;
+
+  flex-wrap: wrap;
+
+  margin-bottom: 15px;
+}
+
+.marker-btn {
+
+  min-width: 60px;
+
+  background: white;
+
+  border: 1px solid var(--sncte-border);
+}
+
+.active {
+
+  background: var(--sncte-blue);
+
+  color: white;
+}
+
+.buttons {
+
+  display: flex;
+
+  gap: 10px;
+}
+
+</style>
