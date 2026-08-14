@@ -13,7 +13,7 @@
 
       <div class="marker-title">
 
-        M{{ index + 1 }}
+        {{ marker.id }}
 
       </div>
 

@@ -2,6 +2,8 @@ import { ref } from "vue"
 
 export interface Marker {
 
+  id: string
+
   enabled: boolean
 
   selected: boolean
@@ -14,30 +16,47 @@ export interface Marker {
 export const markers =
   ref<Marker[]>([
     {
+      id: "CENTRO",
       enabled: true,
       selected: true,
       frequencyHz: null,
       powerDbm: null,
     },
+
     {
+      id: "M1",
       enabled: false,
       selected: false,
       frequencyHz: null,
       powerDbm: null,
     },
+
     {
+      id: "M2",
       enabled: false,
       selected: false,
       frequencyHz: null,
       powerDbm: null,
     },
+
     {
+      id: "M3",
       enabled: false,
       selected: false,
       frequencyHz: null,
       powerDbm: null,
     },
+
     {
+      id: "M4",
+      enabled: false,
+      selected: false,
+      frequencyHz: null,
+      powerDbm: null,
+    },
+
+    {
+      id: "M5",
       enabled: false,
       selected: false,
       frequencyHz: null,
@@ -61,6 +80,7 @@ export function useMarkers() {
 
     markers.value[0].enabled = true
     markers.value[0].selected = true
+
   }
 
   function selectMarker(
