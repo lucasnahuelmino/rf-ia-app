@@ -91,17 +91,6 @@
 
       <label>
 
-        <span>VBW (kHz)</span>
-
-        <input
-          v-model.number="vbwKHz"
-          type="number"
-        />
-
-      </label>
-
-      <label>
-
         <span>Ref (dBm)</span>
 
         <input

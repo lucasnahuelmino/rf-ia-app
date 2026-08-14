@@ -2,8 +2,8 @@
 
   <canvas
     ref="canvasRef"
-    width="1400"
-    height="700"
+    width="1100"
+    height="600"
     @mousemove="onMouseMove"
     @click="onCanvasClick"
   />

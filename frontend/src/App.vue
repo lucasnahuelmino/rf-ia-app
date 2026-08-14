@@ -119,7 +119,7 @@ body {
 }
 
 .left-panel {
-  flex: 1;
+
   min-width: 0;
 }
 

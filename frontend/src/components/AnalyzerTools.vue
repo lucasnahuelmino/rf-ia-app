@@ -1,48 +1,52 @@
 <template>
-  
-    <div class="tools-container">
 
-      <div class="marker-group">
+  <div class="tools-container">
 
-        <button
-          v-for="(marker,index) in markers"
-          :key="index"
-          class="tool-button"
-          :class="{
-            active: marker.selected
-          }"
-          @click="selectMarker(index)"
-        >
+    <div class="row">
 
-          M{{ index + 1 }}
+      <button
+        v-for="(marker,index) in markers"
+        :key="index"
+        class="tool-button"
+        :class="{
+          active: marker.selected
+        }"
+        @click="selectMarker(index)"
+      >
+        M{{ index + 1 }}
+      </button>
 
-        </button>
+    </div>
 
-      </div>
+    <div class="row">
 
-      <label class="tool-check">
-        <input
-          type="checkbox"
-          v-model="showPeakMarker"
-        />
-        Peak
-      </label>
+      <button
+        class="tool-button"
+        :class="{ active: showPeakMarker }"
+        @click="showPeakMarker = !showPeakMarker"
+      >
+        PEAK
+      </button>
 
-      <label class="tool-check">
-        <input
-          type="checkbox"
-          v-model="showDelta"
-        />
-        Delta
-      </label>
+      <button
+        class="tool-button"
+        :class="{ active: showDelta }"
+        @click="showDelta = !showDelta"
+      >
+        DELTA
+      </button>
 
-      <label class="tool-check">
-        <input
-          type="checkbox"
-          v-model="showMaxHold"
-        />
-        Max Hold
-      </label>
+    </div>
+
+    <div class="row">
+
+      <button
+        class="tool-button"
+        :class="{ active: showMaxHold }"
+        @click="showMaxHold = !showMaxHold"
+      >
+        MAX
+      </button>
 
       <input
         v-model.number="maxHoldSeconds"
@@ -50,15 +54,13 @@
         type="number"
       />
 
-      <span>s</span>
-
-      <label class="tool-check">
-        <input
-          type="checkbox"
-          v-model="showMinHold"
-        />
-        Min Hold
-      </label>
+      <button
+        class="tool-button"
+        :class="{ active: showMinHold }"
+        @click="showMinHold = !showMinHold"
+      >
+        MIN
+      </button>
 
       <input
         v-model.number="minHoldSeconds"
@@ -66,15 +68,13 @@
         type="number"
       />
 
-      <span>s</span>
-
-      <label class="tool-check">
-        <input
-          type="checkbox"
-          v-model="showAverage"
-        />
-        Average
-      </label>
+      <button
+        class="tool-button"
+        :class="{ active: showAverage }"
+        @click="showAverage = !showAverage"
+      >
+        AVG
+      </button>
 
       <input
         v-model.number="averageSweeps"
@@ -82,32 +82,27 @@
         type="number"
       />
 
-      <span>sweeps</span>
+    </div>
 
-      <button
-        class="action-button"
-        @click="$emit('peakSearch')"
-      >
-        Buscar Pico
-      </button>
+    <div class="row">
 
       <button
         class="action-button"
         @click="$emit('centerMarker')"
       >
-        Centrar M1
+        CENTRAR M1
       </button>
 
       <button
         class="action-button"
         @click="$emit('clear')"
       >
-        Limpiar
+        LIMPIAR
       </button>
 
     </div>
 
-  
+  </div>
 
 </template>
 
@@ -152,65 +147,81 @@ const averageSweeps = ref(20)
 
 <style scoped>
 
-.panel {
-  background: white;
-  border: 1px solid var(--sncte-border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 5px;
-  margin-bottom: 15px;
-}
-
 .tools-container {
+
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+
+  flex-direction: column;
+
   gap: 8px;
-  margin-top: 1px;
 }
 
-.marker-group {
+.row {
+
   display: flex;
-  gap: 4px;
+
+  gap: 6px;
+
+  flex-wrap: wrap;
+
+  align-items: center;
 }
 
 .tool-button {
-  min-width: 42px;
-  font-size: 12px;
+
+  min-width: 48px;
+
   height: 28px;
+
+  padding: 0 10px;
+
   border-radius: 6px;
+
   border: 1px solid var(--sncte-border);
+
   background: white;
+
+  color: var(--sncte-blue-dark);
+
+  font-size: 12px;
+
+  font-weight: 600;
 }
 
 .tool-button.active {
-  background: var(--sncte-blue);
-  color: white;
-}
 
-.tool-check {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  white-space: nowrap;
+  background: var(--sncte-blue);
+
+  color: white;
 }
 
 .small-input {
-  width: 60px;
+
+  width: 48px;
+
+  height: 28px;
+
   text-align: center;
+
+  font-size: 12px;
 }
 
 .action-button {
+
+  height: 30px;
+
+  padding: 0 12px;
+
   background: var(--sncte-blue);
+
   color: white;
+
   border: none;
+
+  border-radius: 6px;
+
   font-size: 12px;
-  border-radius: 8px;
-  padding: 6px 10px;
-}
 
-.action-button:hover {
-  background: var(--sncte-blue-light);
+  font-weight: 600;
 }
-
 </style>

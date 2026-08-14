@@ -23,7 +23,16 @@
 
       <span>Preset RF</span>
 
-      <select v-model="preset">
+      <select
+        v-model="preset"
+        @change="loadPreset"
+      >
+
+        <option
+          value=""
+        >
+          Seleccionar...
+        </option>
 
         <option
           v-for="item in presets"
@@ -96,3 +105,50 @@ function loadPreset() {
 }
 
 </script>
+<style scoped>
+
+.preset-selector {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+
+  margin-bottom: 12px;
+}
+
+label {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+span {
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  color: var(--sncte-blue-dark);
+}
+
+select {
+
+  height: 30px;
+
+  padding: 0 8px;
+
+  font-size: 12px;
+
+  background: white;
+
+  border: 1px solid var(--sncte-border);
+
+  border-radius: 6px;
+}
+
+</style>
