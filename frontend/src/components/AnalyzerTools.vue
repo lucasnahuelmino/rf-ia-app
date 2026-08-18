@@ -5,15 +5,21 @@
     <div class="row">
 
       <button
-        v-for="(marker,index) in markers"
-        :key="index"
+        v-for="marker in markers"
+        :key="marker.id"
         class="tool-button"
         :class="{
           active: marker.selected
         }"
-        @click="selectMarker(index)"
+        @click="
+          selectMarker(
+            markers.findIndex(
+              m => m.id === marker.id
+            )
+          )
+        "
       >
-        M{{ index + 1 }}
+        {{ marker.id }}
       </button>
 
     </div>
@@ -22,16 +28,23 @@
 
       <button
         class="tool-button"
-        :class="{ active: showPeakMarker }"
-        @click="showPeakMarker = !showPeakMarker"
+        :class="{
+          active: showPeakMarker
+        }"
+        @click="togglePeak"
       >
         PEAK
       </button>
 
       <button
         class="tool-button"
-        :class="{ active: showDelta }"
-        @click="showDelta = !showDelta"
+        :class="{
+          active: showDelta
+        }"
+        @click="
+          showDelta =
+          !showDelta
+        "
       >
         DELTA
       </button>
@@ -42,8 +55,13 @@
 
       <button
         class="tool-button"
-        :class="{ active: showMaxHold }"
-        @click="showMaxHold = !showMaxHold"
+        :class="{
+          active: showMaxHold
+        }"
+        @click="
+          showMaxHold =
+          !showMaxHold
+        "
       >
         MAX
       </button>
@@ -56,8 +74,13 @@
 
       <button
         class="tool-button"
-        :class="{ active: showMinHold }"
-        @click="showMinHold = !showMinHold"
+        :class="{
+          active: showMinHold
+        }"
+        @click="
+          showMinHold =
+          !showMinHold
+        "
       >
         MIN
       </button>
@@ -70,8 +93,13 @@
 
       <button
         class="tool-button"
-        :class="{ active: showAverage }"
-        @click="showAverage = !showAverage"
+        :class="{
+          active: showAverage
+        }"
+        @click="
+          showAverage =
+          !showAverage
+        "
       >
         AVG
       </button>
@@ -88,16 +116,35 @@
 
       <button
         class="action-button"
-        @click="$emit('centerMarker')"
+        @click="
+          emit(
+            'centerMarker'
+          )
+        "
       >
         CENTRAR M1
       </button>
 
       <button
         class="action-button"
-        @click="$emit('clear')"
+        @click="
+          emit(
+            'clear'
+          )
+        "
       >
         LIMPIAR
+      </button>
+
+      <button
+        class="action-button"
+        @click="
+          emit(
+            'resetView'
+          )
+        "
+      >
+        RESET
       </button>
 
     </div>
@@ -116,32 +163,63 @@ import {
   useMarkers,
 } from "../composables/useMarkers"
 
-defineEmits([
-  "peakSearch",
-  "centerMarker",
-  "clear",
-])
+const emit =
+  defineEmits([
+    "peakSearch",
+    "centerMarker",
+    "clear",
+    "resetView",
+    "togglePeakTracking",
+  ])
 
 const {
   markers,
   selectMarker,
 } = useMarkers()
 
-const showPeakMarker = ref(true)
+const showPeakMarker =
+  ref(false)
 
-const showDelta = ref(false)
+const showDelta =
+  ref(false)
 
-const showMaxHold = ref(false)
+const showMaxHold =
+  ref(false)
 
-const showMinHold = ref(false)
+const showMinHold =
+  ref(false)
 
-const showAverage = ref(false)
+const showAverage =
+  ref(false)
 
-const maxHoldSeconds = ref(60)
+const maxHoldSeconds =
+  ref(60)
 
-const minHoldSeconds = ref(60)
+const minHoldSeconds =
+  ref(60)
 
-const averageSweeps = ref(20)
+const averageSweeps =
+  ref(20)
+
+function togglePeak() {
+
+  showPeakMarker.value =
+    !showPeakMarker.value
+
+  emit(
+    "togglePeakTracking",
+    showPeakMarker.value
+  )
+
+  if (
+    showPeakMarker.value
+  ) {
+
+    emit(
+      "peakSearch"
+    )
+  }
+}
 
 </script>
 
@@ -186,6 +264,8 @@ const averageSweeps = ref(20)
   font-size: 12px;
 
   font-weight: 600;
+
+  cursor: pointer;
 }
 
 .tool-button.active {
@@ -223,5 +303,13 @@ const averageSweeps = ref(20)
   font-size: 12px;
 
   font-weight: 600;
+
+  cursor: pointer;
 }
+
+.action-button:hover {
+
+  opacity: 0.9;
+}
+
 </style>

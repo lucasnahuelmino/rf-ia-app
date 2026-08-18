@@ -35,6 +35,11 @@ const props = defineProps({
   averageTrace: Array,
 })
 
+const emit =
+  defineEmits([
+    "moveCenter",
+  ])
+
 const canvasRef =
   ref<HTMLCanvasElement | null>(null)
 
@@ -80,6 +85,9 @@ function onCanvasClick(
   const snapshot =
     props.snapshot as any
 
+  if (!snapshot)
+    return
+
   const rect =
     canvas.getBoundingClientRect()
 
@@ -93,8 +101,7 @@ function onCanvasClick(
     snapshot.start_frequency_hz
     +
     (
-      ratio
-      *
+      ratio *
       (
         snapshot.stop_frequency_hz
         -
@@ -111,10 +118,25 @@ function onCanvasClick(
   if (!selected)
     return
 
+  selected.enabled = true
+
   selected.frequencyHz =
     frequencyHz
 
   selected.powerDbm = 0
+
+  /*
+   * Marker especial CENTRO
+   */
+  if (
+    selected.id === "CENTRO"
+  ) {
+
+    emit(
+      "moveCenter",
+      frequencyHz
+    )
+  }
 
   draw()
 }
