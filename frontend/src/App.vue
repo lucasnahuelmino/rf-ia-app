@@ -15,6 +15,7 @@
         v-if="snapshot"
         :snapshot="snapshot"
         @moveCenter="moveCenterMarker"
+        @zoom="zoomSpectrum"
       />
 
       <MarkerBar />
@@ -232,6 +233,38 @@ async function centerOnMarker() {
 
     span_hz:
       snapshot.value.span_hz,
+
+    rbw_hz:
+      snapshot.value.rbw_hz,
+
+    vbw_hz:
+      snapshot.value.vbw_hz,
+
+    reference_level_dbm:
+      snapshot.value.reference_level_dbm,
+  })
+}
+
+async function zoomSpectrum(
+  deltaY: number,
+) {
+
+  if (!snapshot.value)
+    return
+
+  const factor =
+    deltaY > 0
+      ? 1.2
+      : 0.8
+
+  await updateSpectrumConfig({
+
+    center_frequency_hz:
+      snapshot.value.center_frequency_hz,
+
+    span_hz:
+      snapshot.value.span_hz
+      * factor,
 
     rbw_hz:
       snapshot.value.rbw_hz,

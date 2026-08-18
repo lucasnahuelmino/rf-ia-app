@@ -6,6 +6,7 @@
     height="600"
     @mousemove="onMouseMove"
     @click="onCanvasClick"
+    @wheel.prevent="onZoom"
   />
 
 </template>
@@ -38,6 +39,7 @@ const props = defineProps({
 const emit =
   defineEmits([
     "moveCenter",
+    "zoom",
   ])
 
 const canvasRef =
@@ -70,6 +72,16 @@ function onMouseMove(
 
   cursorY.value =
     event.clientY - rect.top
+}
+
+function onZoom(
+  event: WheelEvent,
+) {
+
+  emit(
+    "zoom",
+    event.deltaY
+  )
 }
 
 function onCanvasClick(
