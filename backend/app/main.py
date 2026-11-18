@@ -16,6 +16,10 @@ from app.api.routers.exports import router as exports_router
 from app.api.routers.automation import router as automation_router
 from app.api.routers.ollama import router as ollama_router
 from app.api.routers.ml import router as ml_router
+from app.api.routers.multidevice import router as multidevice_router
+from app.api.routers.antennas import router as antennas_router
+from app.api.routers.missions import router as missions_router
+from app.api.routers.occupation import router as occupation_router
 from app.rf.spectrum_worker import SpectrumWorker
 
 
@@ -61,3 +65,7 @@ app.include_router(exports_router)
 app.include_router(automation_router)
 app.include_router(ollama_router)
 app.include_router(ml_router)
+app.include_router(multidevice_router)
+app.include_router(antennas_router)
+app.include_router(missions_router)
+app.include_router(occupation_router)

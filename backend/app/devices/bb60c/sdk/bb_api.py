@@ -351,8 +351,6 @@ def error_check(func):
         status = return_vars["status"]
         if status != 0:
             print (f"{'Error' if status < 0 else 'Warning'} {status}: {bb_get_error_string(status)} in {func.__name__}()")
-        if status < 0:
-            exit()
         return return_vars
     return print_status_if_error
 

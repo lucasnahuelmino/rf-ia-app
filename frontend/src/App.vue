@@ -101,6 +101,14 @@
         <MLPanel />
       </CollapsiblePanel>
 
+      <CollapsiblePanel title="Receptores" :defaultOpen="false">
+        <MultiDevicePanel />
+      </CollapsiblePanel>
+
+      <CollapsiblePanel title="Misiones" :defaultOpen="false">
+        <MissionPanel />
+      </CollapsiblePanel>
+
     </div>
 
   </div>
@@ -166,6 +174,12 @@ import OllamaPanel
 
 import MLPanel
   from "./components/MLPanel.vue"
+
+import MultiDevicePanel
+  from "./components/MultiDevicePanel.vue"
+
+import MissionPanel
+  from "./components/MissionPanel.vue"
 
 import DevicePanel
   from "./components/DevicePanel.vue"
