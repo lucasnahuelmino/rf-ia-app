@@ -4,25 +4,24 @@ import threading
 import time
 from typing import Optional
 
+import numpy as np
+
 from app.devices.bb60c.models import SweepConfiguration
-from app.rf.config import spectrum_config, SpectrumConfig
+from app.rf.config import spectrum_config
 from app.rf.models import SpectrumSnapshot
 from app.rf.state import spectrum_state
+from app.rf.synthetic import generate_spectrum
 from app.services.device_manager import device_manager
 
 
 class SpectrumWorker:
-    """Continuous (or single) sweep acquisition worker."""
+    """Continuous sweep acquisition worker with simulated fallback."""
 
     def __init__(self, manager=None) -> None:
         self._manager = manager or device_manager
         self._thread: Optional[threading.Thread] = None
         self._running = False
         self._lock = threading.Lock()
-
-    # ---------------------------------------------------------
-    # Lifecycle
-    # ---------------------------------------------------------
 
     def start(self) -> None:
         with self._lock:
@@ -49,12 +48,7 @@ class SpectrumWorker:
         return self._running
 
     def single_sweep(self) -> None:
-        """Perform one acquisition without starting continuous mode."""
         self._acquire_once()
-
-    # ---------------------------------------------------------
-    # Internal
-    # ---------------------------------------------------------
 
     def _build_config(self) -> SweepConfiguration:
         with spectrum_config.lock:
@@ -108,9 +102,10 @@ class SpectrumWorker:
                 spectrum_state.snapshot.trace_min = trace.trace_min.tolist()
                 spectrum_state.snapshot.trace_max = trace.trace_max.tolist()
                 spectrum_state.snapshot.config_version = self._config_version()
+                spectrum_state.snapshot.source = "HARDWARE"
 
             self._manager.set_acquiring(False)
-        except Exception as exc:
+        except Exception:
             self._manager.set_acquiring(False)
             raise
         finally:
@@ -118,47 +113,72 @@ class SpectrumWorker:
 
     def _run(self) -> None:
         last_config_version = -1
+        simulated = False
 
         try:
             while self._running:
                 try:
-                    if not self._manager.is_connected:
-                        self._manager.connect()
+                    if not simulated:
+                        if not self._manager.is_connected:
+                            self._manager.connect()
 
-                    current_version = self._config_version()
+                        current_version = self._config_version()
 
-                    if current_version != last_config_version:
-                        self._manager.set_acquiring(True)
+                        if current_version != last_config_version:
+                            self._manager.set_acquiring(True)
+                            cfg = self._build_config()
+                            self._manager.configure_sweep(cfg)
+                            self._manager.start_sweep()
+                            last_config_version = current_version
+                            self._manager.set_acquiring(False)
+
+                        trace = self._manager.get_trace()
+
+                        center, span, _start, _stop = self._build_config().normalized_center_span()
+
+                        with spectrum_state.lock:
+                            spectrum_state.snapshot.timestamp = time.time()
+                            spectrum_state.snapshot.center_frequency_hz = center
+                            spectrum_state.snapshot.span_hz = span
+                            spectrum_state.snapshot.start_frequency_hz = trace.info.start_frequency_hz
+                            spectrum_state.snapshot.stop_frequency_hz = (
+                                trace.info.start_frequency_hz
+                                + trace.info.trace_length * trace.info.bin_size_hz
+                            )
+                            spectrum_state.snapshot.bin_size_hz = trace.info.bin_size_hz
+                            spectrum_state.snapshot.trace_length = trace.info.trace_length
+                            spectrum_state.snapshot.trace = trace.trace_max.tolist()
+                            spectrum_state.snapshot.trace_min = trace.trace_min.tolist()
+                            spectrum_state.snapshot.trace_max = trace.trace_max.tolist()
+                            spectrum_state.snapshot.config_version = current_version
+                            spectrum_state.snapshot.source = "HARDWARE"
+
+                        time.sleep(0.05)
+                    else:
                         cfg = self._build_config()
-                        self._manager.configure_sweep(cfg)
-                        self._manager.start_sweep()
-                        last_config_version = current_version
-                        self._manager.set_acquiring(False)
-
-                    trace = self._manager.get_trace()
-
-                    center, span, _start, _stop = self._build_config().normalized_center_span()
-
-                    with spectrum_state.lock:
-                        spectrum_state.snapshot.timestamp = time.time()
-                        spectrum_state.snapshot.center_frequency_hz = center
-                        spectrum_state.snapshot.span_hz = span
-                        spectrum_state.snapshot.start_frequency_hz = trace.info.start_frequency_hz
-                        spectrum_state.snapshot.stop_frequency_hz = (
-                            trace.info.start_frequency_hz
-                            + trace.info.trace_length * trace.info.bin_size_hz
-                        )
-                        spectrum_state.snapshot.bin_size_hz = trace.info.bin_size_hz
-                        spectrum_state.snapshot.trace_length = trace.info.trace_length
-                        spectrum_state.snapshot.trace = trace.trace_max.tolist()
-                        spectrum_state.snapshot.trace_min = trace.trace_min.tolist()
-                        spectrum_state.snapshot.trace_max = trace.trace_max.tolist()
-                        spectrum_state.snapshot.config_version = current_version
-
-                    time.sleep(0.05)
+                        center, span, start, stop = cfg.normalized_center_span()
+                        bin_size = cfg.rbw_hz
+                        trace = generate_spectrum(center, span, bin_size)
+                        with spectrum_state.lock:
+                            spectrum_state.snapshot.timestamp = time.time()
+                            spectrum_state.snapshot.center_frequency_hz = center
+                            spectrum_state.snapshot.span_hz = span
+                            spectrum_state.snapshot.start_frequency_hz = start
+                            spectrum_state.snapshot.stop_frequency_hz = stop
+                            spectrum_state.snapshot.bin_size_hz = bin_size
+                            spectrum_state.snapshot.trace_length = len(trace)
+                            spectrum_state.snapshot.trace = trace.tolist()
+                            spectrum_state.snapshot.trace_min = (trace - 2).tolist()
+                            spectrum_state.snapshot.trace_max = trace.tolist()
+                            spectrum_state.snapshot.config_version = self._config_version()
+                            spectrum_state.snapshot.source = "SIMULATED"
+                        time.sleep(0.1)
 
                 except Exception as exc:
                     print("[SpectrumWorker] ERROR:", exc)
+                    if not simulated:
+                        print("[SpectrumWorker] Falling back to SIMULATED source.")
+                        simulated = True
                     self._manager.set_acquiring(False)
                     try:
                         self._manager.force_disconnect()

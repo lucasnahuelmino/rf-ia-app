@@ -22,3 +22,4 @@ class SpectrumSnapshot:
     trace_max: Optional[List[float]] = None
 
     config_version: int = 0
+    source: str = "HARDWARE"

@@ -74,6 +74,18 @@
 
     </div>
 
+    <div class="item">
+
+      <span class="label">
+        Fuente
+      </span>
+
+      <span class="value">
+        {{ source }}
+      </span>
+
+    </div>
+
   </div>
 
 </template>
@@ -106,6 +118,14 @@ const spanMHz = computed(() => {
     props.snapshot.span_hz
     / 1e6
   ).toFixed(3) + " MHz"
+})
+
+const source = computed(() => {
+
+  if (!props.snapshot)
+    return "--"
+
+  return props.snapshot.source ?? "HARDWARE"
 })
 
 const peakInfo = computed(() => {

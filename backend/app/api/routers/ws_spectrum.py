@@ -34,6 +34,7 @@ async def spectrum_ws(websocket: WebSocket) -> None:
                     "trace_min": snapshot.trace_min,
                     "trace_max": snapshot.trace_max,
                     "config_version": snapshot.config_version,
+                    "source": snapshot.source,
                 }
 
                 current_timestamp = snapshot.timestamp

@@ -33,4 +33,7 @@ class SpectrumService:
 
                 "trace":
                     snapshot.trace,
+
+                "source":
+                    snapshot.source,
             }
