@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import os
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 
@@ -72,7 +72,7 @@ class SessionService:
                 "INSERT INTO sessions (name, created_at, center_frequency_hz, span_hz, config_json, notes) VALUES (?,?,?,?,?,?)",
                 (
                     name,
-                    datetime.utcnow().isoformat(),
+                    datetime.now(timezone.utc).isoformat(),
                     (config or {}).get("center_frequency_hz"),
                     (config or {}).get("span_hz"),
                     json.dumps(config or {}),
@@ -96,7 +96,7 @@ class SessionService:
         with self._conn() as conn:
             cur = conn.execute(
                 "INSERT INTO captures (session_id, type, filename, created_at, metadata_json) VALUES (?,?,?,?,?)",
-                (session_id, ctype, filename, datetime.utcnow().isoformat(), json.dumps(metadata or {})),
+                (session_id, ctype, filename, datetime.now(timezone.utc).isoformat(), json.dumps(metadata or {})),
             )
             conn.commit()
             return int(cur.lastrowid)
@@ -113,7 +113,7 @@ class SessionService:
         with self._conn() as conn:
             cur = conn.execute(
                 "INSERT INTO events (session_id, created_at, level, message, metadata_json) VALUES (?,?,?,?,?)",
-                (session_id, datetime.utcnow().isoformat(), level, message, json.dumps(metadata or {})),
+                (session_id, datetime.now(timezone.utc).isoformat(), level, message, json.dumps(metadata or {})),
             )
             conn.commit()
             return int(cur.lastrowid)

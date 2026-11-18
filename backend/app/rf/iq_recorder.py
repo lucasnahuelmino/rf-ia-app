@@ -18,7 +18,7 @@ class IQMetadata:
     bandwidth_hz: float
     gain: int
     attenuation: int
-    start_time: float
+    start_time: float = 0.0
     end_time: Optional[float] = None
     samples: int = 0
     dtype: str = "float32_interleaved"
