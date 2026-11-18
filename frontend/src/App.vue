@@ -107,6 +107,7 @@
 
       <CollapsiblePanel title="Antenas" :defaultOpen="false">
         <AntennaEditor />
+        <RFChainEditor />
       </CollapsiblePanel>
 
       <CollapsiblePanel title="Auditor" :defaultOpen="false">
@@ -221,6 +222,9 @@ import CoveragePanel
 
 import AntennaEditor
   from "./components/AntennaEditor.vue"
+
+import RFChainEditor
+  from "./components/RFChainEditor.vue"
 
 import OccupationAuditorPanel
   from "./components/OccupationAuditorPanel.vue"

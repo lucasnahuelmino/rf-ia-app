@@ -31,6 +31,7 @@ class AntennaService:
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT,
                     components_json TEXT,
+                    topology_json TEXT,
                     receiver_serial INTEGER,
                     losses_db REAL,
                     created_at TEXT
@@ -38,12 +39,18 @@ class AntennaService:
                 """
             )
             c.commit()
+            for col, ddl in [("topology_json", "TEXT")]:
+                try:
+                    c.execute(f"ALTER TABLE antenna_chains ADD COLUMN {col} {ddl}")
+                    c.commit()
+                except Exception:
+                    pass
 
-    def create(self, name: str, components: List[str], receiver_serial: Optional[int] = None, losses_db: float = 0.0) -> int:
+    def create(self, name: str, components: List[str], receiver_serial: Optional[int] = None, losses_db: float = 0.0, topology: dict | None = None) -> int:
         with self._conn() as c:
             cur = c.execute(
-                "INSERT INTO antenna_chains (name, components_json, receiver_serial, losses_db, created_at) VALUES (?,?,?,?,?)",
-                (name, json.dumps(components), receiver_serial, losses_db, datetime.now(timezone.utc).isoformat()),
+                "INSERT INTO antenna_chains (name, components_json, topology_json, receiver_serial, losses_db, created_at) VALUES (?,?,?,?,?,?)",
+                (name, json.dumps(components), json.dumps(topology or {}), receiver_serial, losses_db, datetime.now(timezone.utc).isoformat()),
             )
             c.commit()
             return int(cur.lastrowid)
@@ -54,7 +61,8 @@ class AntennaService:
             out = []
             for r in rows:
                 d = dict(r)
-                d["components"] = json.loads(d.pop("components_json", "[]"))
+                d["components"] = json.loads(d.pop("components_json", "[]") or "[]")
+                d["topology"] = json.loads(d.pop("topology_json", "{}") or "{}")
                 out.append(d)
             return out
 
@@ -64,8 +72,15 @@ class AntennaService:
             if not r:
                 return None
             d = dict(r)
-            d["components"] = json.loads(d.pop("components_json", "[]"))
+            d["components"] = json.loads(d.pop("components_json", "[]") or "[]")
+            d["topology"] = json.loads(d.pop("topology_json", "{}") or "{}")
             return d
+
+    def update_topology(self, chain_id: int, topology: dict) -> bool:
+        with self._conn() as c:
+            cur = c.execute("UPDATE antenna_chains SET topology_json=? WHERE id=?", (json.dumps(topology), chain_id))
+            c.commit()
+            return cur.rowcount > 0
 
     def delete(self, chain_id: int) -> bool:
         with self._conn() as c:
