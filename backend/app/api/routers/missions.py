@@ -46,3 +46,8 @@ def resume_mission(mission_id: int):
 @router.post("/missions/{mission_id}/cancel")
 def cancel_mission(mission_id: int):
     return _service.cancel(mission_id)
+
+
+@router.get("/missions/recover")
+def recover_missions():
+    return {"items": _service.recover_interrupted()}

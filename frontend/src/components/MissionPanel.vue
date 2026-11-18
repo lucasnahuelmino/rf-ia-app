@@ -5,11 +5,16 @@
       <input v-model="name" placeholder="Nombre misión" />
       <button @click="create">Crear</button>
     </div>
+    <div v-if="recovered.length" class="recovered">
+      Misiones interrumpidas: {{ recovered.length }}
+    </div>
+
     <ul>
       <li v-for="m in missions" :key="m.id">
         {{ m.name }} - {{ m.status }}
         <button @click="execute(m.id)">Ejecutar</button>
         <button @click="pause(m.id)">Pausar</button>
+        <button @click="resume(m.id)">Reanudar</button>
       </li>
     </ul>
   </div>
@@ -19,9 +24,13 @@ import { ref, onMounted } from "vue"
 import { API_BASE } from "../config"
 const name = ref("")
 const missions = ref<any[]>([])
+const recovered = ref<any[]>([])
+
 async function load() {
   const res = await fetch(`${API_BASE}/missions`)
   missions.value = (await res.json()).items
+  const r2 = await fetch(`${API_BASE}/missions/recover`)
+  recovered.value = (await r2.json()).items
 }
 async function create() {
   await fetch(`${API_BASE}/missions`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name.value }) })
@@ -34,6 +43,10 @@ async function execute(id: number) {
 }
 async function pause(id: number) {
   await fetch(`${API_BASE}/missions/${id}/pause`, { method: "POST" })
+  await load()
+}
+async function resume(id: number) {
+  await fetch(`${API_BASE}/missions/${id}/resume`, { method: "POST" })
   await load()
 }
 onMounted(load)

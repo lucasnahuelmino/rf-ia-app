@@ -37,8 +37,12 @@ def test_antenna_and_mission_persistence():
     assert miss.get(mid)["status"] == "created"
     miss.execute(mid)
     assert miss.get(mid)["status"] == "running"
-    miss.pause(mid)
-    assert miss.get(mid)["status"] == "paused"
+    miss.mark_interrupted(mid, {"progress": 50})
+    assert miss.get(mid)["status"] == "interrupted"
+    recovered = miss.recover_interrupted()
+    assert any(r["id"] == mid for r in recovered)
+    miss.resume(mid)
+    assert miss.get(mid)["status"] == "running"
 
 
 def test_occupation_audit():

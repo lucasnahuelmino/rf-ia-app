@@ -19,6 +19,7 @@ from app.api.routers.ml import router as ml_router
 from app.api.routers.multidevice import router as multidevice_router
 from app.api.routers.antennas import router as antennas_router
 from app.api.routers.missions import router as missions_router
+from app.services.mission_service import MissionService
 from app.api.routers.occupation import router as occupation_router
 from app.rf.spectrum_worker import SpectrumWorker
 
@@ -29,6 +30,10 @@ worker = SpectrumWorker()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    try:
+        MissionService().recover_interrupted()
+    except Exception:
+        pass
 
     worker.start()
 
