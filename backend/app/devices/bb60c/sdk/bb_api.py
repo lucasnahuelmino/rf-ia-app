@@ -3,10 +3,53 @@
 # Copyright (c) 2022 Signal Hound
 # For licensing information, please see the API license in the software_licenses folder
 
+import os
+import sys
 from ctypes import *
 import numpy
 
-bblib = CDLL("bbdevice/bb_api.dll")
+
+def _resolve_sdk_dir() -> str:
+    candidates = []
+
+    env_dir = os.environ.get("RF_SDK_DIR")
+    if env_dir:
+        candidates.append(env_dir)
+
+    # SDK shipped next to this module.
+    candidates.append(os.path.dirname(os.path.abspath(__file__)))
+
+    # Repository / backend layout copies.
+    here = os.path.dirname(os.path.abspath(__file__))
+    candidates.append(os.path.join(here, "..", "..", "..", "..", "bbdevice"))
+    candidates.append(os.path.join(os.getcwd(), "bbdevice"))
+    candidates.append(os.path.join(os.getcwd(), "backend", "bbdevice"))
+
+    for candidate in candidates:
+        if not candidate:
+            continue
+        normalized = os.path.abspath(candidate)
+        if os.path.exists(os.path.join(normalized, "bb_api.dll")):
+            return normalized
+
+    raise FileNotFoundError(
+        "bb_api.dll could not be located. Set RF_SDK_DIR to the SDK directory."
+    )
+
+
+SDK_DIR = _resolve_sdk_dir()
+
+if hasattr(os, "add_dll_directory"):
+    try:
+        os.add_dll_directory(SDK_DIR)
+    except OSError:
+        pass
+
+current_path = os.environ.get("PATH", "")
+if SDK_DIR not in current_path.split(os.pathsep):
+    os.environ["PATH"] = SDK_DIR + os.pathsep + current_path
+
+bblib = CDLL(os.path.join(SDK_DIR, "bb_api.dll"))
 
 
 # ---------------------------------- Constants -----------------------------------
@@ -656,14 +699,14 @@ def bb_fetch_trace(device, array_size):
 @error_check
 def bb_fetch_real_time_frame(device):
     ret = bb_query_trace_info(device)
-    if ret["status"] is not 0:
+    if ret["status"] != 0:
         return {
             "status": ret["status"]
         }
     trace_len = ret["trace_len"]
 
     ret = bb_query_real_time_info(device)
-    if ret["status"] is not 0:
+    if ret["status"] != 0:
         return {
             "status": ret["status"]
         }

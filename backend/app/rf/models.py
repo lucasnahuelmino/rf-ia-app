@@ -1,18 +1,24 @@
-from dataclasses import dataclass
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import Optional, List
 
 
 @dataclass
 class SpectrumSnapshot:
-    timestamp: float
+    timestamp: float = 0.0
 
-    center_frequency_hz: float
-    span_hz: float
+    center_frequency_hz: float = 0.0
+    span_hz: float = 0.0
 
-    start_frequency_hz: float
-    stop_frequency_hz: float
+    start_frequency_hz: float = 0.0
+    stop_frequency_hz: float = 0.0
 
-    bin_size_hz: float
-    trace_length: int
+    bin_size_hz: float = 0.0
+    trace_length: int = 0
 
-    trace: Optional[list]
+    trace: Optional[List[float]] = None
+    trace_min: Optional[List[float]] = None
+    trace_max: Optional[List[float]] = None
+
+    config_version: int = 0

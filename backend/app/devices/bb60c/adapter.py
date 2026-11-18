@@ -145,16 +145,41 @@ class BB60CAdapter(RFDevice):
         config: SweepConfiguration,
     ) -> None:
 
+        center, span, _start, _stop = (
+            config.normalized_center_span()
+        )
+
+        attenuation = (
+            -1
+            if config.auto_attenuation
+            else int(config.attenuation)
+        )
+
+        gain = (
+            -1
+            if config.auto_gain
+            else int(config.gain)
+        )
+
+        sweep_time = float(config.sweep_time_s or 0.0)
+
         result = bb_api.bb_configure_ref_level(
             self.handle,
             config.reference_level_dbm,
         )
         self._check_status(result)
 
+        result = bb_api.bb_configure_gain_atten(
+            self.handle,
+            gain,
+            attenuation,
+        )
+        self._check_status(result)
+
         result = bb_api.bb_configure_center_span(
             self.handle,
-            config.center_frequency_hz,
-            config.span_hz,
+            center,
+            span,
         )
         self._check_status(result)
 
@@ -162,15 +187,15 @@ class BB60CAdapter(RFDevice):
             self.handle,
             config.rbw_hz,
             config.vbw_hz,
-            0.0,
-            bb_api.BB_RBW_SHAPE_NUTTALL,
-            bb_api.BB_NO_SPUR_REJECT,
+            sweep_time,
+            config.rbw_shape,
+            config.spur_reject,
         )
         self._check_status(result)
 
         result = bb_api.bb_configure_acquisition(
             self.handle,
-            bb_api.BB_AVERAGE,
+            config.detector,
             bb_api.BB_LOG_SCALE,
         )
         self._check_status(result)

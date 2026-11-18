@@ -1,157 +1,174 @@
+from __future__ import annotations
+
 import threading
 import time
+from typing import Optional
 
-from app.devices.bb60c.adapter import BB60CAdapter
 from app.devices.bb60c.models import SweepConfiguration
-
-from app.rf.config import spectrum_config
-
-from .state import spectrum_state
+from app.rf.config import spectrum_config, SpectrumConfig
+from app.rf.models import SpectrumSnapshot
+from app.rf.state import spectrum_state
+from app.services.device_manager import device_manager
 
 
 class SpectrumWorker:
+    """Continuous (or single) sweep acquisition worker."""
 
-    def __init__(self):
+    def __init__(self, manager=None) -> None:
+        self._manager = manager or device_manager
+        self._thread: Optional[threading.Thread] = None
+        self._running = False
+        self._lock = threading.Lock()
 
+    # ---------------------------------------------------------
+    # Lifecycle
+    # ---------------------------------------------------------
+
+    def start(self) -> None:
+        with self._lock:
+            if self._running:
+                return
+            self._running = True
+            self._thread = threading.Thread(
+                target=self._run,
+                daemon=True,
+                name="SpectrumWorker",
+            )
+            self._thread.start()
+
+    def stop(self) -> None:
+        with self._lock:
+            self._running = False
+
+        thread = self._thread
+        if thread is not None and thread.is_alive():
+            thread.join(timeout=5.0)
         self._thread = None
-        self._running = False
 
-    def start(self):
+    def is_running(self) -> bool:
+        return self._running
 
-        if self._running:
-            return
+    def single_sweep(self) -> None:
+        """Perform one acquisition without starting continuous mode."""
+        self._acquire_once()
 
-        self._running = True
+    # ---------------------------------------------------------
+    # Internal
+    # ---------------------------------------------------------
 
-        self._thread = threading.Thread(
-            target=self._run,
-            daemon=True,
-        )
+    def _build_config(self) -> SweepConfiguration:
+        with spectrum_config.lock:
+            return SweepConfiguration(
+                center_frequency_hz=spectrum_config.center_frequency_hz,
+                span_hz=spectrum_config.span_hz,
+                start_frequency_hz=spectrum_config.start_frequency_hz,
+                stop_frequency_hz=spectrum_config.stop_frequency_hz,
+                rbw_hz=spectrum_config.rbw_hz,
+                vbw_hz=spectrum_config.vbw_hz,
+                reference_level_dbm=spectrum_config.reference_level_dbm,
+                attenuation=spectrum_config.attenuation,
+                gain=spectrum_config.gain,
+                auto_attenuation=spectrum_config.auto_attenuation,
+                auto_gain=spectrum_config.auto_gain,
+                detector=spectrum_config.detector,
+                rbw_shape=spectrum_config.rbw_shape,
+                spur_reject=spectrum_config.spur_reject,
+                sweep_time_s=spectrum_config.sweep_time_s,
+            )
 
-        self._thread.start()
+    def _config_version(self) -> int:
+        with spectrum_config.lock:
+            return spectrum_config.version
 
-    def stop(self):
+    def _acquire_once(self) -> None:
+        self._manager.connect()
+        try:
+            self._manager.set_acquiring(True)
 
-        self._running = False
+            cfg = self._build_config()
+            self._manager.configure_sweep(cfg)
+            self._manager.start_sweep()
 
-    def _run(self):
+            trace = self._manager.get_trace()
 
-        device = BB60CAdapter()
+            center, span, start, stop = cfg.normalized_center_span()
 
+            with spectrum_state.lock:
+                spectrum_state.snapshot.timestamp = time.time()
+                spectrum_state.snapshot.center_frequency_hz = center
+                spectrum_state.snapshot.span_hz = span
+                spectrum_state.snapshot.start_frequency_hz = trace.info.start_frequency_hz
+                spectrum_state.snapshot.stop_frequency_hz = (
+                    trace.info.start_frequency_hz
+                    + trace.info.trace_length * trace.info.bin_size_hz
+                )
+                spectrum_state.snapshot.bin_size_hz = trace.info.bin_size_hz
+                spectrum_state.snapshot.trace_length = trace.info.trace_length
+                spectrum_state.snapshot.trace = trace.trace_max.tolist()
+                spectrum_state.snapshot.trace_min = trace.trace_min.tolist()
+                spectrum_state.snapshot.trace_max = trace.trace_max.tolist()
+                spectrum_state.snapshot.config_version = self._config_version()
+
+            self._manager.set_acquiring(False)
+        except Exception as exc:
+            self._manager.set_acquiring(False)
+            raise
+        finally:
+            self._manager.disconnect()
+
+    def _run(self) -> None:
         last_config_version = -1
 
         try:
-
-            device.connect()
-
             while self._running:
+                try:
+                    if not self._manager.is_connected:
+                        self._manager.connect()
 
-                with spectrum_config.lock:
+                    current_version = self._config_version()
 
-                    current_version = (
-                        spectrum_config.version
-                    )
+                    if current_version != last_config_version:
+                        self._manager.set_acquiring(True)
+                        cfg = self._build_config()
+                        self._manager.configure_sweep(cfg)
+                        self._manager.start_sweep()
+                        last_config_version = current_version
+                        self._manager.set_acquiring(False)
 
-                    config = SweepConfiguration(
-                        center_frequency_hz=
-                            spectrum_config.center_frequency_hz,
+                    trace = self._manager.get_trace()
 
-                        span_hz=
-                            spectrum_config.span_hz,
+                    center, span, _start, _stop = self._build_config().normalized_center_span()
 
-                        rbw_hz=
-                            spectrum_config.rbw_hz,
+                    with spectrum_state.lock:
+                        spectrum_state.snapshot.timestamp = time.time()
+                        spectrum_state.snapshot.center_frequency_hz = center
+                        spectrum_state.snapshot.span_hz = span
+                        spectrum_state.snapshot.start_frequency_hz = trace.info.start_frequency_hz
+                        spectrum_state.snapshot.stop_frequency_hz = (
+                            trace.info.start_frequency_hz
+                            + trace.info.trace_length * trace.info.bin_size_hz
+                        )
+                        spectrum_state.snapshot.bin_size_hz = trace.info.bin_size_hz
+                        spectrum_state.snapshot.trace_length = trace.info.trace_length
+                        spectrum_state.snapshot.trace = trace.trace_max.tolist()
+                        spectrum_state.snapshot.trace_min = trace.trace_min.tolist()
+                        spectrum_state.snapshot.trace_max = trace.trace_max.tolist()
+                        spectrum_state.snapshot.config_version = current_version
 
-                        vbw_hz=
-                            spectrum_config.vbw_hz,
+                    time.sleep(0.05)
 
-                        reference_level_dbm=
-                            spectrum_config.reference_level_dbm,
-                    )
-
-                if current_version != last_config_version:
-
-                    print(
-                        "[SpectrumWorker] "
-                        f"Applying config v{current_version}"
-                    )
-
-                    print(
-                        "[SpectrumWorker] "
-                        f"CF={config.center_frequency_hz} "
-                        f"SPAN={config.span_hz} "
-                        f"RBW={config.rbw_hz} "
-                        f"VBW={config.vbw_hz}"
-                    )
-
-                    device.configure_sweep(
-                        config
-                    )
-
-                    device.start_sweep()
-
-                    last_config_version = (
-                        current_version
-                    )
-
-                trace = device.get_trace()
-
-                stop_frequency_hz = (
-                    trace.info.start_frequency_hz
-                    +
-                    (
-                        trace.info.trace_length
-                        * trace.info.bin_size_hz
-                    )
-                )
-
-                with spectrum_state.lock:
-
-                    spectrum_state.snapshot.timestamp = (
-                        time.time()
-                    )
-
-                    spectrum_state.snapshot.center_frequency_hz = (
-                        config.center_frequency_hz
-                    )
-
-                    spectrum_state.snapshot.span_hz = (
-                        config.span_hz
-                    )
-
-                    spectrum_state.snapshot.start_frequency_hz = (
-                        trace.info.start_frequency_hz
-                    )
-
-                    spectrum_state.snapshot.stop_frequency_hz = (
-                        stop_frequency_hz
-                    )
-
-                    spectrum_state.snapshot.bin_size_hz = (
-                        trace.info.bin_size_hz
-                    )
-
-                    spectrum_state.snapshot.trace_length = (
-                        trace.info.trace_length
-                    )
-
-                    spectrum_state.snapshot.trace = (
-                        trace.trace_max.tolist()
-                    )
-
-                time.sleep(0.05)
-
-        except Exception as exc:
-
-            print(
-                "[SpectrumWorker] ERROR:",
-                exc,
-            )
+                except Exception as exc:
+                    print("[SpectrumWorker] ERROR:", exc)
+                    self._manager.set_acquiring(False)
+                    try:
+                        self._manager.force_disconnect()
+                    except Exception:
+                        pass
+                    time.sleep(1.0)
 
         finally:
-
-            device.disconnect()
-
-            print(
-                "[SpectrumWorker] Device disconnected."
-            )
+            try:
+                self._manager.force_disconnect()
+            except Exception:
+                pass
+            print("[SpectrumWorker] Device disconnected.")

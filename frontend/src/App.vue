@@ -11,21 +11,41 @@
         :snapshot="snapshot"
       />
 
+      <div class="connection-bar">
+        Estado WS:
+        <span :class="connectionClass">
+          {{ connectionStatus }}
+        </span>
+      </div>
+
       <SpectrumCanvas
         v-if="snapshot"
         :snapshot="snapshot"
+        :show-max-hold="showMaxHold"
+        :show-min-hold="showMinHold"
+        :show-average="showAverage"
+        :max-hold="maxHold ?? undefined"
+        :min-hold="minHold ?? undefined"
+        :average-trace="averageTrace ?? undefined"
         @moveCenter="moveCenterMarker"
         @zoom="zoomSpectrum"
+        @pan="panSpectrum"
       />
 
       <MarkerBar />
 
-      <!-- Próximamente -->
-      <!-- <WaterfallCanvas :snapshot="snapshot" /> -->
+      <MarkerTable />
+
+      <MeasurementsPanel
+        v-if="snapshot"
+        :snapshot="snapshot"
+      />
 
     </div>
 
     <div class="right-panel">
+
+      <DevicePanel />
 
       <SpectrumControls />
 
@@ -39,6 +59,13 @@
           @centerMarker="centerOnMarker"
           @resetView="resetView"
           @togglePeakTracking="togglePeakTracking"
+          @markerToPeak="markerToPeak"
+          @nextPeak="nextPeak"
+          @previousPeak="previousPeak"
+          @toggleMaxHold="onToggleMaxHold"
+          @toggleMinHold="onToggleMinHold"
+          @toggleAverage="onToggleAverage"
+          @clearAccumulators="clearAccumulators"
         />
 
       </CollapsiblePanel>
@@ -76,6 +103,15 @@ import AnalyzerTools
 import MarkerBar
   from "./components/MarkerBar.vue"
 
+import MarkerTable
+  from "./components/MarkerTable.vue"
+
+import MeasurementsPanel
+  from "./components/MeasurementsPanel.vue"
+
+import DevicePanel
+  from "./components/DevicePanel.vue"
+
 import CollapsiblePanel
   from "./components/CollapsiblePanel.vue"
 
@@ -84,8 +120,12 @@ import {
 } from "./composables/useSpectrum"
 
 import {
-  markers,
+  useMarkers,
 } from "./composables/useMarkers"
+
+import {
+  useTraceAnalysis,
+} from "./composables/useTraceAnalysis"
 
 import {
   updateSpectrumConfig,
@@ -94,219 +134,191 @@ import {
 const peakTracking =
   ref(false)
 
-function togglePeakTracking(
-  enabled: boolean,
-) {
+const showMaxHold =
+  ref(false)
 
-  peakTracking.value =
-    enabled
-}
+const showMinHold =
+  ref(false)
 
-async function resetView() {
+const showAverage =
+  ref(false)
 
-  await updateSpectrumConfig({
-
-    center_frequency_hz:
-      122e6,
-
-    span_hz:
-      28e6,
-
-    rbw_hz:
-      10000,
-
-    vbw_hz:
-      10000,
-
-    reference_level_dbm:
-      0,
-  })
-}
+const {
+  markers,
+  moveMarkerToPeak,
+  peakSearch: markerPeakSearch,
+  nextPeak: markerNextPeak,
+  previousPeak: markerPreviousPeak,
+  centerOnMarker: markerCenterOnMarker,
+} = useMarkers()
 
 const {
   spectrum,
+  connectionStatus,
   connect,
 } = useSpectrum()
+
+const traceAnalysis =
+  useTraceAnalysis(spectrum)
+
+const maxHold = computed(
+  () => traceAnalysis.maxHold.value
+)
+
+const minHold = computed(
+  () => traceAnalysis.minHold.value
+)
+
+const averageTrace = computed(
+  () => traceAnalysis.average.value
+)
 
 const snapshot = computed(
   () => spectrum.value
 )
 
+const connectionClass = computed(() => {
+  switch (connectionStatus.value) {
+    case "connected":
+      return "status-connected"
+    case "connecting":
+      return "status-connecting"
+    default:
+      return "status-disconnected"
+  }
+})
+
 watch(
   snapshot,
   () => {
-
-    if (
-      peakTracking.value
-    ) {
-
+    if (peakTracking.value) {
       peakSearch()
     }
   },
-  {
-    deep: true,
-  },
+  { deep: true },
 )
 
+function togglePeakTracking(enabled: boolean) {
+  peakTracking.value = enabled
+}
+
+async function resetView() {
+  await updateSpectrumConfig({
+    center_frequency_hz: 122e6,
+    span_hz: 28e6,
+    rbw_hz: 10000,
+    vbw_hz: 10000,
+    reference_level_dbm: 0,
+  })
+}
+
 function peakSearch() {
+  if (!snapshot.value) return
+  markerPeakSearch(snapshot.value, "M1")
+}
 
-  if (!snapshot.value)
-    return
-
-  const trace =
-    snapshot.value.trace
-
-  if (!trace?.length)
-    return
-
-  let peakIndex = 0
-
-  let peakValue =
-    Number.NEGATIVE_INFINITY
-
-  trace.forEach(
-    (
-      value: number,
-      index: number,
-    ) => {
-
-      if (
-        value > peakValue
-      ) {
-
-        peakValue = value
-
-        peakIndex = index
-      }
-    }
+function markerToPeak() {
+  if (!snapshot.value) return
+  const selected = markers.value.find(
+    (m) => m.selected
   )
+  if (!selected) return
+  moveMarkerToPeak(selected.id, snapshot.value)
+}
 
-  const frequencyHz =
-    snapshot.value.start_frequency_hz
-    +
-    (
-      peakIndex
-      *
-      snapshot.value.bin_size_hz
-    )
+function nextPeak() {
+  if (!snapshot.value) return
+  const selected = markers.value.find(
+    (m) => m.selected
+  )
+  if (!selected) return
+  markerNextPeak(snapshot.value, selected.id)
+}
 
-  const marker =
-    markers.value.find(
-      marker =>
-        marker.id === "M1"
-    )
-
-  if (!marker)
-    return
-
-  marker.enabled = true
-
-  marker.frequencyHz =
-    frequencyHz
-
-  marker.powerDbm =
-    peakValue
+function previousPeak() {
+  if (!snapshot.value) return
+  const selected = markers.value.find(
+    (m) => m.selected
+  )
+  if (!selected) return
+  markerPreviousPeak(snapshot.value, selected.id)
 }
 
 async function centerOnMarker() {
+  if (!snapshot.value) return
 
-  if (!snapshot.value)
-    return
+  const marker = markers.value.find(
+    (m) => m.id === "M1"
+  )
 
-  const marker =
-    markers.value.find(
-      marker =>
-        marker.id === "M1"
-    )
+  if (!marker || !marker.frequencyHz) return
 
-  if (
-    !marker ||
-    !marker.frequencyHz
-  ) {
-    return
-  }
+  const payload = markerCenterOnMarker(
+    "M1",
+    snapshot.value
+  )
+
+  if (!payload) return
+
+  await updateSpectrumConfig(payload)
+}
+
+async function zoomSpectrum(deltaY: number) {
+  if (!snapshot.value) return
+
+  const factor = deltaY > 0 ? 1.2 : 0.8
 
   await updateSpectrumConfig({
-
-    center_frequency_hz:
-      marker.frequencyHz,
-
-    span_hz:
-      snapshot.value.span_hz,
-
-    rbw_hz:
-      snapshot.value.rbw_hz,
-
-    vbw_hz:
-      snapshot.value.vbw_hz,
-
-    reference_level_dbm:
-      snapshot.value.reference_level_dbm,
+    center_frequency_hz: snapshot.value.center_frequency_hz,
+    span_hz: snapshot.value.span_hz * factor,
+    rbw_hz: snapshot.value.rbw_hz,
+    vbw_hz: snapshot.value.vbw_hz,
+    reference_level_dbm: snapshot.value.reference_level_dbm,
   })
 }
 
-async function zoomSpectrum(
-  deltaY: number,
-) {
-
-  if (!snapshot.value)
-    return
-
-  const factor =
-    deltaY > 0
-      ? 1.2
-      : 0.8
+async function panSpectrum(centerFrequencyHz: number) {
+  if (!snapshot.value) return
 
   await updateSpectrumConfig({
-
-    center_frequency_hz:
-      snapshot.value.center_frequency_hz,
-
-    span_hz:
-      snapshot.value.span_hz
-      * factor,
-
-    rbw_hz:
-      snapshot.value.rbw_hz,
-
-    vbw_hz:
-      snapshot.value.vbw_hz,
-
-    reference_level_dbm:
-      snapshot.value.reference_level_dbm,
+    center_frequency_hz: centerFrequencyHz,
+    span_hz: snapshot.value.span_hz,
+    rbw_hz: snapshot.value.rbw_hz,
+    vbw_hz: snapshot.value.vbw_hz,
+    reference_level_dbm: snapshot.value.reference_level_dbm,
   })
 }
 
-async function moveCenterMarker(
-  frequencyHz: number,
-) {
-
-  if (!snapshot.value)
-    return
+async function moveCenterMarker(frequencyHz: number) {
+  if (!snapshot.value) return
 
   await updateSpectrumConfig({
-
-    center_frequency_hz:
-      frequencyHz,
-
-    span_hz:
-      snapshot.value.span_hz,
-
-    rbw_hz:
-      snapshot.value.rbw_hz,
-
-    vbw_hz:
-      snapshot.value.vbw_hz,
-
-    reference_level_dbm:
-      snapshot.value.reference_level_dbm,
+    center_frequency_hz: frequencyHz,
+    span_hz: snapshot.value.span_hz,
+    rbw_hz: snapshot.value.rbw_hz,
+    vbw_hz: snapshot.value.vbw_hz,
+    reference_level_dbm: snapshot.value.reference_level_dbm,
   })
+}
+
+function onToggleMaxHold(value: boolean) {
+  showMaxHold.value = value
+}
+
+function onToggleMinHold(value: boolean) {
+  showMinHold.value = value
+}
+
+function onToggleAverage(value: boolean) {
+  showAverage.value = value
+}
+
+function clearAccumulators() {
+  traceAnalysis.reset()
 }
 
 onMounted(() => {
-
   connect()
-
 })
 
 </script>
@@ -314,49 +326,51 @@ onMounted(() => {
 <style>
 
 body {
-
   margin: 0;
-
-  background:
-    var(--sncte-background);
-
-  font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
+  background: var(--sncte-background);
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .layout {
-
   padding: 10px;
-
   display: flex;
-
   gap: 10px;
-
   align-items: flex-start;
 }
 
 .left-panel {
-
   flex: 1;
-
   min-width: 0;
 }
 
 .right-panel {
-
   width: 320px;
-
   display: flex;
-
   flex-direction: column;
-
   gap: 15px;
-
   position: sticky;
-
   top: 20px;
+}
+
+.connection-bar {
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #374151;
+}
+
+.status-connected {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.status-connecting {
+  color: #d97706;
+  font-weight: 700;
+}
+
+.status-disconnected {
+  color: #dc2626;
+  font-weight: 700;
 }
 
 </style>
