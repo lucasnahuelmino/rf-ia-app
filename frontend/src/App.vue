@@ -113,6 +113,7 @@
         <GPSPanel />
         <GeoMapView />
         <SpatialAnalysisPanel />
+        <CoveragePanel />
       </CollapsiblePanel>
 
     </div>
@@ -195,6 +196,9 @@ import GeoMapView
 
 import SpatialAnalysisPanel
   from "./components/SpatialAnalysisPanel.vue"
+
+import CoveragePanel
+  from "./components/CoveragePanel.vue"
 
 import DevicePanel
   from "./components/DevicePanel.vue"

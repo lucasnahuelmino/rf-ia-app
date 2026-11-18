@@ -24,6 +24,7 @@ from app.api.routers.occupation import router as occupation_router
 from app.api.routers.gps import router as gps_router
 from app.api.routers.geo import router as geo_router
 from app.api.routers.spatial import router as spatial_router
+from app.api.routers.coverage import router as coverage_router
 from app.rf.spectrum_worker import SpectrumWorker
 
 
@@ -80,3 +81,4 @@ app.include_router(occupation_router)
 app.include_router(gps_router)
 app.include_router(geo_router)
 app.include_router(spatial_router)
+app.include_router(coverage_router)
