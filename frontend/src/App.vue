@@ -109,6 +109,11 @@
         <MissionPanel />
       </CollapsiblePanel>
 
+      <CollapsiblePanel title="GPS" :defaultOpen="false">
+        <GPSPanel />
+        <GeoMapView />
+      </CollapsiblePanel>
+
     </div>
 
   </div>
@@ -180,6 +185,12 @@ import MultiDevicePanel
 
 import MissionPanel
   from "./components/MissionPanel.vue"
+
+import GPSPanel
+  from "./components/GPSPanel.vue"
+
+import GeoMapView
+  from "./components/GeoMapView.vue"
 
 import DevicePanel
   from "./components/DevicePanel.vue"
