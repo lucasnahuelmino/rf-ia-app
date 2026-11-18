@@ -105,6 +105,18 @@
         <MultiDevicePanel />
       </CollapsiblePanel>
 
+      <CollapsiblePanel title="Antenas" :defaultOpen="false">
+        <AntennaEditor />
+      </CollapsiblePanel>
+
+      <CollapsiblePanel title="Auditor" :defaultOpen="false">
+        <OccupationAuditorPanel />
+      </CollapsiblePanel>
+
+      <CollapsiblePanel title="Heatmap" :defaultOpen="false">
+        <AdvancedHeatmapPanel />
+      </CollapsiblePanel>
+
       <CollapsiblePanel title="Misiones" :defaultOpen="false">
         <MissionPanel />
       </CollapsiblePanel>
@@ -199,6 +211,15 @@ import SpatialAnalysisPanel
 
 import CoveragePanel
   from "./components/CoveragePanel.vue"
+
+import AntennaEditor
+  from "./components/AntennaEditor.vue"
+
+import OccupationAuditorPanel
+  from "./components/OccupationAuditorPanel.vue"
+
+import AdvancedHeatmapPanel
+  from "./components/AdvancedHeatmapPanel.vue"
 
 import DevicePanel
   from "./components/DevicePanel.vue"
