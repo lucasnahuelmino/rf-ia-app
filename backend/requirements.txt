@@ -12,3 +12,6 @@ pytest-mock
 fastapi
 uvicorn
 matplotlib
+openpyxl
+reportlab
+scikit-learn

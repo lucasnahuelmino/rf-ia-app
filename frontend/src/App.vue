@@ -34,6 +34,11 @@
 
       <MarkerBar />
 
+      <WaterfallCanvas
+        v-if="snapshot"
+        :snapshot="snapshot"
+      />
+
       <MarkerTable />
 
       <MeasurementsPanel
@@ -70,6 +75,32 @@
 
       </CollapsiblePanel>
 
+      <CollapsiblePanel title="Grabación I/Q" :defaultOpen="false">
+        <IQRecorderPanel />
+        <IQPlayerPanel />
+      </CollapsiblePanel>
+
+      <CollapsiblePanel title="Demodulación y Audio" :defaultOpen="false">
+        <DemodulatorPanel />
+        <AudioPanel />
+      </CollapsiblePanel>
+
+      <CollapsiblePanel title="Biblioteca" :defaultOpen="false">
+        <RecordingsLibrary />
+      </CollapsiblePanel>
+
+      <CollapsiblePanel title="Exportaciones" :defaultOpen="false">
+        <ExportPanel />
+      </CollapsiblePanel>
+
+      <CollapsiblePanel title="Asistente IA" :defaultOpen="false">
+        <OllamaPanel />
+      </CollapsiblePanel>
+
+      <CollapsiblePanel title="Machine Learning" :defaultOpen="false">
+        <MLPanel />
+      </CollapsiblePanel>
+
     </div>
 
   </div>
@@ -91,6 +122,9 @@ import AppHeader
 import SpectrumCanvas
   from "./components/SpectrumCanvas.vue"
 
+import WaterfallCanvas
+  from "./components/WaterfallCanvas.vue"
+
 import SpectrumControls
   from "./components/SpectrumControls.vue"
 
@@ -108,6 +142,30 @@ import MarkerTable
 
 import MeasurementsPanel
   from "./components/MeasurementsPanel.vue"
+
+import IQRecorderPanel
+  from "./components/IQRecorderPanel.vue"
+
+import IQPlayerPanel
+  from "./components/IQPlayerPanel.vue"
+
+import DemodulatorPanel
+  from "./components/DemodulatorPanel.vue"
+
+import AudioPanel
+  from "./components/AudioPanel.vue"
+
+import RecordingsLibrary
+  from "./components/RecordingsLibrary.vue"
+
+import ExportPanel
+  from "./components/ExportPanel.vue"
+
+import OllamaPanel
+  from "./components/OllamaPanel.vue"
+
+import MLPanel
+  from "./components/MLPanel.vue"
 
 import DevicePanel
   from "./components/DevicePanel.vue"
