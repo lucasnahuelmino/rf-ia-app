@@ -58,6 +58,25 @@ class ExportService:
         wb.save(path)
         return path
 
+    def to_geojson(self, filename: str, points: List[Dict[str, Any]]) -> str:
+        path = os.path.join(self.base_dir, filename)
+        features = []
+        for p in points:
+            if p.get("latitude") is None or p.get("longitude") is None:
+                continue
+            features.append({
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [p["longitude"], p["latitude"]],
+                },
+                "properties": {k: v for k, v in p.items() if k not in ("latitude", "longitude")},
+            })
+        geojson = {"type": "FeatureCollection", "features": features}
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(geojson, f, indent=2)
+        return path
+
     def to_pdf(self, filename: str, title: str, sections: List[Dict[str, Any]]) -> str:
         path = os.path.join(self.base_dir, filename)
         c = pdf_canvas.Canvas(path, pagesize=letter)

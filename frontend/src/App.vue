@@ -112,6 +112,7 @@
       <CollapsiblePanel title="GPS" :defaultOpen="false">
         <GPSPanel />
         <GeoMapView />
+        <SpatialAnalysisPanel />
       </CollapsiblePanel>
 
     </div>
@@ -191,6 +192,9 @@ import GPSPanel
 
 import GeoMapView
   from "./components/GeoMapView.vue"
+
+import SpatialAnalysisPanel
+  from "./components/SpatialAnalysisPanel.vue"
 
 import DevicePanel
   from "./components/DevicePanel.vue"
