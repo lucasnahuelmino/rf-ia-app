@@ -19,8 +19,12 @@ class SpatialAnalysisService:
             items = [i for i in items if i.get("frequency_hz") is not None and abs(i["frequency_hz"] - frequency_hz) <= tolerance_hz]
         return items
 
-    def heatmap(self, mission_id: Optional[int] = None, metric: str = "level_dbm", grid_size: int = 20) -> Dict[str, Any]:
-        items = self.geo.list(mission_id, limit=100000)
+    def heatmap(self, mission_id: Optional[int] = None, metric: str = "level_dbm", grid_size: int = 20, filters: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        f = dict(filters or {})
+        if mission_id is not None:
+            f["mission_id"] = mission_id
+        f["limit"] = 100000
+        items = self.geo.query(f)
         if not items:
             return {"cells": [], "min": None, "max": None}
 

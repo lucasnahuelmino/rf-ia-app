@@ -34,3 +34,8 @@ def record_geo(payload: GeoRecord):
 @router.get("/geo/list")
 def list_geo(mission_id: int | None = None, limit: int = 500):
     return {"items": _service.list(mission_id, limit)}
+
+
+@router.post("/geo/query")
+def query_geo(filters: dict):
+    return {"items": _service.query(filters)}

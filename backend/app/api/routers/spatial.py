@@ -17,6 +17,7 @@ class HeatmapRequest(BaseModel):
     mission_id: int | None = None
     metric: str = "level_dbm"
     grid_size: int = 20
+    filters: dict | None = None
 
 
 class FMAnalysisRequest(BaseModel):
@@ -39,7 +40,7 @@ def spatial_route(mission_id: int | None = None, frequency_hz: float | None = No
 
 @router.post("/spatial/heatmap")
 def spatial_heatmap(payload: HeatmapRequest):
-    return _analysis.heatmap(payload.mission_id, payload.metric, payload.grid_size)
+    return _analysis.heatmap(payload.mission_id, payload.metric, payload.grid_size, payload.filters)
 
 
 @router.post("/spatial/fm-analysis")

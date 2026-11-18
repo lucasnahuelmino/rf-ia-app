@@ -128,6 +128,10 @@
         <CoveragePanel />
       </CollapsiblePanel>
 
+      <CollapsiblePanel title="Campañas" :defaultOpen="false">
+        <CampaignPanel />
+      </CollapsiblePanel>
+
     </div>
 
   </div>
@@ -208,6 +212,9 @@ import GeoMapView
 
 import SpatialAnalysisPanel
   from "./components/SpatialAnalysisPanel.vue"
+
+import CampaignPanel
+  from "./components/CampaignPanel.vue"
 
 import CoveragePanel
   from "./components/CoveragePanel.vue"

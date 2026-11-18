@@ -46,6 +46,17 @@ class GeoMeasurementService:
                 """
             )
             c.commit()
+            for idx_sql in [
+                "CREATE INDEX IF NOT EXISTS idx_geo_mission ON geo_measurements(mission_id)",
+                "CREATE INDEX IF NOT EXISTS idx_geo_time ON geo_measurements(timestamp)",
+                "CREATE INDEX IF NOT EXISTS idx_geo_freq ON geo_measurements(frequency_hz)",
+                "CREATE INDEX IF NOT EXISTS idx_geo_receiver ON geo_measurements(receiver_serial)",
+            ]:
+                try:
+                    c.execute(idx_sql)
+                    c.commit()
+                except Exception:
+                    pass
             for col, ddl in [
                 ("measured_power_dbm", "REAL"),
                 ("corrected_power_dbm", "REAL"),
@@ -98,10 +109,60 @@ class GeoMeasurementService:
             return int(cur.lastrowid)
 
     def list(self, mission_id: Optional[int] = None, limit: int = 500) -> List[Dict[str, Any]]:
+        return self.query({"mission_id": mission_id, "limit": limit})
+
+    def query(self, filters: Dict[str, Any] | None = None) -> List[Dict[str, Any]]:
+        filters = filters or {}
+        clauses = []
+        params: List[Any] = []
+        if filters.get("mission_id") is not None:
+            clauses.append("mission_id=?")
+            params.append(filters["mission_id"])
+        if filters.get("session_id") is not None:
+            clauses.append("session_id=?")
+            params.append(filters["session_id"])
+        if filters.get("receiver_serial") is not None:
+            clauses.append("receiver_serial=?")
+            params.append(filters["receiver_serial"])
+        if filters.get("antenna_chain_id") is not None:
+            clauses.append("antenna_chain_id=?")
+            params.append(filters["antenna_chain_id"])
+        if filters.get("frequency_hz") is not None:
+            clauses.append("ABS(frequency_hz - ?) <= ?")
+            params.append(filters["frequency_hz"])
+            params.append(filters.get("frequency_tolerance_hz", 1e6))
+        if filters.get("min_lat") is not None:
+            clauses.append("latitude >= ?")
+            params.append(filters["min_lat"])
+        if filters.get("max_lat") is not None:
+            clauses.append("latitude <= ?")
+            params.append(filters["max_lat"])
+        if filters.get("min_lon") is not None:
+            clauses.append("longitude >= ?")
+            params.append(filters["min_lon"])
+        if filters.get("max_lon") is not None:
+            clauses.append("longitude <= ?")
+            params.append(filters["max_lon"])
+        if filters.get("start_time") is not None:
+            clauses.append("timestamp >= ?")
+            params.append(filters["start_time"])
+        if filters.get("end_time") is not None:
+            clauses.append("timestamp <= ?")
+            params.append(filters["end_time"])
+        if filters.get("gps_valid") is not None:
+            clauses.append("gps_valid = ?")
+            params.append(int(filters["gps_valid"]))
+        if filters.get("quality_flag") is not None:
+            clauses.append("quality_flag = ?")
+            params.append(filters["quality_flag"])
+
+        where = (" WHERE " + " AND ".join(clauses)) if clauses else ""
+        limit = int(filters.get("limit", 500))
+        offset = int(filters.get("offset", 0))
+        sql = f"SELECT * FROM geo_measurements{where} ORDER BY id DESC LIMIT ? OFFSET ?"
+        params.extend([limit, offset])
+
         with sqlite3.connect(db_path()) as c:
             c.row_factory = sqlite3.Row
-            if mission_id is not None:
-                rows = c.execute("SELECT * FROM geo_measurements WHERE mission_id=? ORDER BY id DESC LIMIT ?", (mission_id, limit)).fetchall()
-            else:
-                rows = c.execute("SELECT * FROM geo_measurements ORDER BY id DESC LIMIT ?", (limit,)).fetchall()
+            rows = c.execute(sql, params).fetchall()
             return [dict(r) for r in rows]
