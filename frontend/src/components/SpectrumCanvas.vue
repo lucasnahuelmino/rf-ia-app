@@ -546,10 +546,11 @@ onBeforeUnmount(() => {
 .canvas-container {
   position: relative;
   width: 100%;
-  height: 300px;
-  background: #101010;
-  border: 1px solid #2a2a2a;
-  border-radius: 8px;
+  flex: 1;
+  min-height: 160px;
+  background: #020617;
+  border: 1px solid #1e293b;
+  border-radius: 6px;
   overflow: hidden;
 }
 

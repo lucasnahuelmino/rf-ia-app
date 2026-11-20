@@ -18,9 +18,33 @@
 
   <div class="layout">
 
-    <div class="left-panel">
+    <div class="main-area">
 
-      <template v-if="activeSection === 'analyzer' || activeSection === 'analysis'">
+      <div class="toolbar">
+        <AnalyzerTools
+          @peakSearch="peakSearch"
+          @centerMarker="centerOnMarker"
+          @resetView="resetView"
+          @togglePeakTracking="togglePeakTracking"
+          @markerToPeak="markerToPeak"
+          @nextPeak="nextPeak"
+          @previousPeak="previousPeak"
+          @toggleMaxHold="onToggleMaxHold"
+          @toggleMinHold="onToggleMinHold"
+          @toggleAverage="onToggleAverage"
+          @clearAccumulators="clearAccumulators"
+        />
+        <button class="tool-toggle" @click="showConfig = !showConfig">
+          {{ showConfig ? "Ocultar config" : "Config RF" }}
+        </button>
+      </div>
+
+      <div v-if="showConfig" class="config-drawer">
+        <DevicePanel />
+        <SpectrumControls />
+      </div>
+
+      <div class="viz-area">
         <SpectrumStatus v-if="snapshot" :snapshot="snapshot" />
         <SpectrumCanvas
           v-if="snapshot"
@@ -35,92 +59,12 @@
           @zoom="zoomSpectrum"
           @pan="panSpectrum"
         />
+        <div v-else class="empty-canvas">Esperando adquisici�n...</div>
         <WaterfallCanvas v-if="snapshot" :snapshot="snapshot" />
-        <MarkerBar />
-        <MarkerTable />
-      </template>
-
-      <template v-if="activeSection === 'connections'">
-        <MultiDevicePanel />
-        <AntennaEditor />
-        <RFChainEditor />
-        <GPSPanel />
-      </template>
-
-      <template v-if="activeSection === 'missions'">
-        <MissionPanel />
-        <CampaignPanel />
-      </template>
-
-      <template v-if="activeSection === 'processing'">
-        <IQRecorderPanel />
-        <IQPlayerPanel />
-        <DemodulatorPanel />
-        <AudioPanel />
-      </template>
-
-      <template v-if="activeSection === 'analysis'">
-        <MeasurementsPanel v-if="snapshot" :snapshot="snapshot" />
-        <AdvancedHeatmapPanel />
-        <SpatialAnalysisPanel />
-        <CoveragePanel />
-        <OccupationAuditorPanel />
-        <GeoMapView />
-      </template>
-
-      <template v-if="activeSection === 'config'">
-        <DevicePanel />
-        <SpectrumControls />
-        <OllamaPanel />
-        <MLPanel />
-      </template>
-
-      <template v-if="activeSection === 'files'">
-        <RecordingsLibrary />
-        <ExportPanel />
-      </template>
-
-    </div>
-
-    <div class="right-panel">
-
-      <div class="tab-bar">
-        <button
-          v-for="tab in tabs"
-          :key="tab.id"
-          class="tab-button"
-          :class="{ active: activeTab === tab.id }"
-          @click="activeTab = tab.id"
-        >
-          {{ tab.label }}
-        </button>
       </div>
 
-      <div class="tab-content">
-
-        <template v-if="activeTab === 'analysis'">
-          <AnalyzerTools
-            @peakSearch="peakSearch"
-            @centerMarker="centerOnMarker"
-            @resetView="resetView"
-            @togglePeakTracking="togglePeakTracking"
-            @markerToPeak="markerToPeak"
-            @nextPeak="nextPeak"
-            @previousPeak="previousPeak"
-            @toggleMaxHold="onToggleMaxHold"
-            @toggleMinHold="onToggleMinHold"
-            @toggleAverage="onToggleAverage"
-            @clearAccumulators="clearAccumulators"
-          />
-        </template>
-
-        <template v-if="activeTab === 'status'">
-          <div class="status-mini">
-            WS: {{ connectionStatus }}
-          </div>
-        </template>
-
-      </div>
+      <MarkerBar />
+      <MarkerTable />
 
     </div>
 
@@ -164,68 +108,28 @@ import MarkerBar
 import MarkerTable
   from "./components/MarkerTable.vue"
 
-import MeasurementsPanel
-  from "./components/MeasurementsPanel.vue"
 
 import DevicePanel
   from "./components/DevicePanel.vue"
 
-import IQRecorderPanel
-  from "./components/IQRecorderPanel.vue"
 
-import IQPlayerPanel
-  from "./components/IQPlayerPanel.vue"
 
-import DemodulatorPanel
-  from "./components/DemodulatorPanel.vue"
 
-import AudioPanel
-  from "./components/AudioPanel.vue"
 
-import RecordingsLibrary
-  from "./components/RecordingsLibrary.vue"
 
-import ExportPanel
-  from "./components/ExportPanel.vue"
 
-import OllamaPanel
-  from "./components/OllamaPanel.vue"
 
-import MLPanel
-  from "./components/MLPanel.vue"
 
-import MultiDevicePanel
-  from "./components/MultiDevicePanel.vue"
 
-import MissionPanel
-  from "./components/MissionPanel.vue"
 
-import AntennaEditor
-  from "./components/AntennaEditor.vue"
 
-import RFChainEditor
-  from "./components/RFChainEditor.vue"
 
-import OccupationAuditorPanel
-  from "./components/OccupationAuditorPanel.vue"
 
-import GPSPanel
-  from "./components/GPSPanel.vue"
 
-import GeoMapView
-  from "./components/GeoMapView.vue"
 
-import SpatialAnalysisPanel
-  from "./components/SpatialAnalysisPanel.vue"
 
-import CoveragePanel
-  from "./components/CoveragePanel.vue"
 
-import CampaignPanel
-  from "./components/CampaignPanel.vue"
 
-import AdvancedHeatmapPanel
-  from "./components/AdvancedHeatmapPanel.vue"
 
 import {
   useSpectrum,
@@ -266,7 +170,6 @@ const {
 
 const {
   spectrum,
-  connectionStatus,
   connect,
 } = useSpectrum()
 
@@ -290,7 +193,7 @@ const snapshot = computed(
 )
 
 const activeSection = ref("analyzer")
-const activeTab = ref("analysis")
+const showConfig = ref(false)
 
 const sections = [
   { id: "analyzer", label: "Analizador" },
@@ -302,10 +205,7 @@ const sections = [
   { id: "files", label: "Archivo" },
 ]
 
-const tabs = [
-  { id: "analysis", label: "Herramientas" },
-  { id: "status", label: "Estado" },
-]
+
 
 
 
@@ -494,21 +394,45 @@ body {
   overflow: hidden;
 }
 
-.left-panel {
+.main-area {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  overflow: hidden;
+}
+
+.viz-area {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.config-drawer {
+  display: flex;
+  gap: 8px;
+  padding: 6px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  max-height: 180px;
   overflow: auto;
 }
 
-.right-panel {
-  width: 300px;
+.empty-canvas {
+  flex: 1;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  background: #020617;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 13px;
 }
 
 .tab-bar {

@@ -221,14 +221,14 @@ function toggleAverage() {
 }
 
 .tool-button {
-  min-width: 48px;
-  height: 28px;
-  padding: 0 10px;
-  border-radius: 6px;
-  border: 1px solid var(--sncte-border);
-  background: white;
-  color: var(--sncte-blue-dark);
-  font-size: 12px;
+  min-width: 40px;
+  height: 24px;
+  padding: 0 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--bg-panel-2);
+  color: var(--text);
+  font-size: 10px;
   font-weight: 600;
   cursor: pointer;
 }

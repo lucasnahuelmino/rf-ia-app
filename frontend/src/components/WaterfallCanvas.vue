@@ -151,7 +151,7 @@ onBeforeUnmount(() => {
 
 canvas {
   width: 100%;
-  height: 180px;
+  height: 120px;
   display: block;
 }
 

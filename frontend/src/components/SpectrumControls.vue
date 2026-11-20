@@ -340,9 +340,9 @@ onMounted(loadConfig)
 }
 
 .grid {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
 }
 
 label {

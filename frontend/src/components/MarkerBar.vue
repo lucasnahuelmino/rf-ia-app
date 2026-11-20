@@ -3,43 +3,31 @@
   <div class="marker-bar">
 
     <div
-      v-for="(marker,index) in markers"
+      v-for="(marker, index) in markers"
       :key="index"
-      class="marker-card"
-      :class="{
-        active: marker.selected
-      }"
+      class="marker-chip"
+      :class="{ active: marker.selected }"
     >
 
-      <div class="marker-title">
-
+      <span class="marker-id">
         {{ marker.id }}
+      </span>
 
-      </div>
-
-      <div class="marker-frequency">
-
+      <span class="marker-freq">
         {{
           marker.frequencyHz
-          ? (marker.frequencyHz / 1e6).toFixed(3)
-          : "---"
+            ? (marker.frequencyHz / 1e6).toFixed(3)
+            : "---"
         }}
+      </span>
 
-        MHz
-
-      </div>
-
-      <div class="marker-level">
-
+      <span class="marker-level">
         {{
           marker.powerDbm !== null
-          ? marker.powerDbm.toFixed(2)
-          : "---"
+            ? marker.powerDbm.toFixed(1)
+            : "---"
         }}
-
-        dBm
-
-      </div>
+      </span>
 
     </div>
 
@@ -62,59 +50,47 @@ const {
 <style scoped>
 
 .marker-bar {
-
   display: flex;
-
-  gap: 10px;
-
-  margin-top: 10px;
-
-  flex-wrap: wrap;
+  gap: 4px;
+  padding: 2px 4px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  height: 32px;
+  align-items: center;
+  overflow-x: auto;
 }
 
-.marker-card {
-
-  min-width: 120px;
-
-  background: #f5f8ff;
-
-  border: 1px solid var(--sncte-border);
-
-  border-radius: 10px;
-
-  padding: 8px;
+.marker-chip {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--bg-panel-2);
+  border: 1px solid var(--border);
+  font-size: 10px;
+  white-space: nowrap;
 }
 
-.marker-card.active {
-
-  background: var(--sncte-blue);
-
-  color: white;
+.marker-chip.active {
+  border-color: var(--accent);
+  background: rgba(34, 211, 238, 0.1);
 }
 
-.marker-title {
-
-  font-size: 11px;
-
+.marker-id {
+  color: var(--accent);
   font-weight: 700;
-
-  text-transform: uppercase;
 }
 
-.marker-frequency {
-
-  margin-top: 4px;
-
-  font-size: 13px;
-
-  font-weight: 700;
+.marker-freq {
+  color: var(--text);
+  font-family: var(--font-mono);
 }
 
 .marker-level {
-
-  margin-top: 2px;
-
-  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
 }
 
 </style>
