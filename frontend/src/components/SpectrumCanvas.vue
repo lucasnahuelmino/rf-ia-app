@@ -237,7 +237,7 @@ function yToDbm(y: number, height: number) {
 }
 
 function drawGrid(ctx: CanvasRenderingContext2D, width: number, height: number) {
-  ctx.strokeStyle = "#2a2a2a"
+  ctx.strokeStyle = "#1e293b"
   ctx.lineWidth = 1
 
   for (let i = 0; i <= 10; i++) {
@@ -482,7 +482,7 @@ function draw() {
 
   ctx.clearRect(0, 0, width, height)
 
-  ctx.fillStyle = "#101010"
+  ctx.fillStyle = "#020617"
   ctx.fillRect(0, 0, width, height)
 
   const snapshot = props.snapshot as any

@@ -490,7 +490,7 @@ body {
   display: flex;
   gap: 4px;
   align-items: stretch;
-  height: calc(100vh - 100px);
+  height: calc(100vh - 136px);
   overflow: hidden;
 }
 

@@ -64,7 +64,7 @@ function draw() {
   const width = canvas.width
   const height = canvas.height
 
-  ctx.fillStyle = "#000"
+  ctx.fillStyle = "#020617"
   ctx.fillRect(0, 0, width, height)
 
   if (!history.value.length) return

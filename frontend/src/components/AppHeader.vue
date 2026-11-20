@@ -3,19 +3,9 @@
   <header class="header">
 
     <div class="title-container">
-
-      <h1>
-        SNCTE
-      </h1>
-
-      <h2>
-        Sistema Nacional de Comprobación Técnica de Emisiones
-      </h2>
-
-      <h3>
-        Monitoreo y Análisis del Espectro Radioeléctrico
-      </h3>
-
+      <h1>SNCTE</h1>
+      <h2>Sistema Nacional de Comprobación Técnica de Emisiones</h2>
+      <h3>Monitoreo y Análisis del Espectro Radioeléctrico</h3>
     </div>
 
     <div class="logo-container">
@@ -29,15 +19,13 @@
 <style scoped>
 
 .header {
-  background: white;
+  background: var(--bg-panel);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 4px 10px;
-  border-radius: 6px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  margin-bottom: 4px;
-  height: 48px;
+  padding: 2px 10px;
+  border-bottom: 1px solid var(--border);
+  height: 36px;
 }
 
 .title-container {
@@ -45,37 +33,33 @@
   flex-direction: column;
 }
 
-.logo-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .logo-container img {
-  height: 32px;
+  height: 24px;
   width: auto;
   object-fit: contain;
+  opacity: 0.85;
 }
 
 h1 {
   margin: 0;
-  color: var(--sncte-blue-dark);
-  font-size: 18px;
-  font-weight: 600;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
   line-height: 1;
+  letter-spacing: 1px;
 }
 
 h2 {
-  margin: 2px 0 0 0;
-  color: var(--sncte-blue);
-  font-size: 9px;
-  font-weight: 600;
+  margin: 1px 0 0 0;
+  color: var(--text-muted);
+  font-size: 8px;
+  font-weight: 500;
 }
 
 h3 {
-  margin: 1px 0 0 0;
-  color: #65748b;
-  font-size: 8px;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 7px;
   font-weight: 400;
 }
 

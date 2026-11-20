@@ -1,32 +1,112 @@
 :root {
-
-  --sncte-blue-dark: #001a57;
-
-  --sncte-blue: #003c9e;
-
-  --sncte-blue-light: #2f6fed;
-
-  --sncte-background: #f4f7fc;
-
-  --sncte-panel: #ffffff;
-
-  --sncte-border: #dfe6f1;
-
-  --sncte-text: #001a57;
-
-  --sncte-success: #003c9e;
-
-  --spectrum-background: #101010;
-
-  --shadow:
-
-    0 2px 10px
-    rgba(0,0,0,0.08);
-
-  --radius: 12px;
+  --bg: #0b1220;
+  --bg-panel: #111827;
+  --bg-panel-2: #0f172a;
+  --border: #1f2937;
+  --border-2: #334155;
+  --text: #cbd5e1;
+  --text-h: #f1f5f9;
+  --text-muted: #64748b;
+  --accent: #22d3ee;
+  --accent-2: #3b82f6;
+  --warn: #fbbf24;
+  --error: #ef4444;
+  --ok: #22c55e;
+  --shadow: 0 2px 8px rgba(0,0,0,0.4);
+  --radius: 6px;
+  --font-sans: "Segoe UI", "Roboto", system-ui, sans-serif;
+  --font-mono: "Consolas", "Courier New", monospace;
 }
-button:not(.tab-button) {
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+
+* { box-sizing: border-box; }
+
+html, body, #app {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 12px;
+}
+
+button {
+  cursor: pointer;
+  border: 1px solid var(--border-2);
+  background: var(--bg-panel-2);
+  color: var(--text);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+button:hover {
+  background: #1e293b;
+  border-color: var(--accent);
+}
+
+button.primary, button.apply {
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
   color: white;
-  border-radius: 6px;
+  border: none;
+}
+
+input, select, textarea {
+  background: var(--bg-panel-2);
+  color: var(--text);
+  border: 1px solid var(--border-2);
+  border-radius: 4px;
+  padding: 3px 6px;
+  font-size: 11px;
+  font-family: var(--font-sans);
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.panel, .controls {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px;
+  box-shadow: var(--shadow);
+}
+
+.panel h3, .controls h3 {
+  margin: 0 0 6px 0;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.label {
+  color: var(--text-muted);
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+.value {
+  color: var(--text-h);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
 }
