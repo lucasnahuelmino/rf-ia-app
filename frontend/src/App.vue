@@ -2,71 +2,101 @@
 
   <AppHeader />
 
+  <nav class="main-nav">
+    <button
+      v-for="sec in sections"
+      :key="sec.id"
+      class="nav-button"
+      :class="{ active: activeSection === sec.id }"
+      @click="activeSection = sec.id"
+    >
+      {{ sec.label }}
+    </button>
+  </nav>
+
+  <ReceiverStrip @select="onReceiverSelect" />
+
   <div class="layout">
 
     <div class="left-panel">
 
-      <SpectrumStatus
-        v-if="snapshot"
-        :snapshot="snapshot"
-      />
+      <template v-if="activeSection === 'analyzer' || activeSection === 'analysis'">
+        <SpectrumStatus v-if="snapshot" :snapshot="snapshot" />
+        <SpectrumCanvas
+          v-if="snapshot"
+          :snapshot="snapshot"
+          :show-max-hold="showMaxHold"
+          :show-min-hold="showMinHold"
+          :show-average="showAverage"
+          :max-hold="maxHold ?? undefined"
+          :min-hold="minHold ?? undefined"
+          :average-trace="averageTrace ?? undefined"
+          @moveCenter="moveCenterMarker"
+          @zoom="zoomSpectrum"
+          @pan="panSpectrum"
+        />
+        <WaterfallCanvas v-if="snapshot" :snapshot="snapshot" />
+        <MarkerBar />
+        <MarkerTable />
+      </template>
 
-      <div class="connection-bar">
-        Estado WS:
-        <span :class="connectionClass">
-          {{ connectionStatus }}
-        </span>
-      </div>
+      <template v-if="activeSection === 'connections'">
+        <MultiDevicePanel />
+        <AntennaEditor />
+        <RFChainEditor />
+        <GPSPanel />
+      </template>
 
-      <SpectrumCanvas
-        v-if="snapshot"
-        :snapshot="snapshot"
-        :show-max-hold="showMaxHold"
-        :show-min-hold="showMinHold"
-        :show-average="showAverage"
-        :max-hold="maxHold ?? undefined"
-        :min-hold="minHold ?? undefined"
-        :average-trace="averageTrace ?? undefined"
-        @moveCenter="moveCenterMarker"
-        @zoom="zoomSpectrum"
-        @pan="panSpectrum"
-      />
+      <template v-if="activeSection === 'missions'">
+        <MissionPanel />
+        <CampaignPanel />
+      </template>
 
-      <MarkerBar />
+      <template v-if="activeSection === 'processing'">
+        <IQRecorderPanel />
+        <IQPlayerPanel />
+        <DemodulatorPanel />
+        <AudioPanel />
+      </template>
 
-      <WaterfallCanvas
-        v-if="snapshot"
-        :snapshot="snapshot"
-      />
+      <template v-if="activeSection === 'analysis'">
+        <MeasurementsPanel v-if="snapshot" :snapshot="snapshot" />
+        <AdvancedHeatmapPanel />
+        <SpatialAnalysisPanel />
+        <CoveragePanel />
+        <OccupationAuditorPanel />
+        <GeoMapView />
+      </template>
 
-      <MarkerTable />
+      <template v-if="activeSection === 'config'">
+        <DevicePanel />
+        <SpectrumControls />
+        <OllamaPanel />
+        <MLPanel />
+      </template>
 
-      <MeasurementsPanel
-        v-if="snapshot"
-        :snapshot="snapshot"
-      />
+      <template v-if="activeSection === 'files'">
+        <RecordingsLibrary />
+        <ExportPanel />
+      </template>
 
     </div>
 
     <div class="right-panel">
 
-      <GradientButtonGroup>
-        <GradientButton
+      <div class="tab-bar">
+        <button
           v-for="tab in tabs"
           :key="tab.id"
-          :active="activeTab === tab.id"
+          class="tab-button"
+          :class="{ active: activeTab === tab.id }"
           @click="activeTab = tab.id"
         >
           {{ tab.label }}
-        </GradientButton>
-      </GradientButtonGroup>
+        </button>
+      </div>
 
       <div class="tab-content">
-
-        <template v-if="activeTab === 'controls'">
-          <DevicePanel />
-          <SpectrumControls />
-        </template>
 
         <template v-if="activeTab === 'analysis'">
           <AnalyzerTools
@@ -84,32 +114,10 @@
           />
         </template>
 
-        <template v-if="activeTab === 'iq'">
-          <IQRecorderPanel />
-          <IQPlayerPanel />
-          <DemodulatorPanel />
-          <AudioPanel />
-        </template>
-
-        <template v-if="activeTab === 'data'">
-          <RecordingsLibrary />
-          <ExportPanel />
-          <AdvancedHeatmapPanel />
-        </template>
-
-        <template v-if="activeTab === 'system'">
-          <MultiDevicePanel />
-          <MissionPanel />
-          <AntennaEditor />
-          <RFChainEditor />
-          <OccupationAuditorPanel />
-          <GPSPanel />
-          <GeoMapView />
-          <SpatialAnalysisPanel />
-          <CoveragePanel />
-          <CampaignPanel />
-          <OllamaPanel />
-          <MLPanel />
+        <template v-if="activeTab === 'status'">
+          <div class="status-mini">
+            WS: {{ connectionStatus }}
+          </div>
         </template>
 
       </div>
@@ -131,6 +139,9 @@ import {
 
 import AppHeader
   from "./components/AppHeader.vue"
+
+import ReceiverStrip
+  from "./components/ReceiverStrip.vue"
 
 import SpectrumCanvas
   from "./components/SpectrumCanvas.vue"
@@ -156,6 +167,9 @@ import MarkerTable
 import MeasurementsPanel
   from "./components/MeasurementsPanel.vue"
 
+import DevicePanel
+  from "./components/DevicePanel.vue"
+
 import IQRecorderPanel
   from "./components/IQRecorderPanel.vue"
 
@@ -180,32 +194,11 @@ import OllamaPanel
 import MLPanel
   from "./components/MLPanel.vue"
 
-import GradientButtonGroup
-  from "./components/ui/GradientButtonGroup.vue"
-
-import GradientButton
-  from "./components/ui/GradientButton.vue"
-
 import MultiDevicePanel
   from "./components/MultiDevicePanel.vue"
 
 import MissionPanel
   from "./components/MissionPanel.vue"
-
-import GPSPanel
-  from "./components/GPSPanel.vue"
-
-import GeoMapView
-  from "./components/GeoMapView.vue"
-
-import SpatialAnalysisPanel
-  from "./components/SpatialAnalysisPanel.vue"
-
-import CampaignPanel
-  from "./components/CampaignPanel.vue"
-
-import CoveragePanel
-  from "./components/CoveragePanel.vue"
 
 import AntennaEditor
   from "./components/AntennaEditor.vue"
@@ -216,19 +209,30 @@ import RFChainEditor
 import OccupationAuditorPanel
   from "./components/OccupationAuditorPanel.vue"
 
+import GPSPanel
+  from "./components/GPSPanel.vue"
+
+import GeoMapView
+  from "./components/GeoMapView.vue"
+
+import SpatialAnalysisPanel
+  from "./components/SpatialAnalysisPanel.vue"
+
+import CoveragePanel
+  from "./components/CoveragePanel.vue"
+
+import CampaignPanel
+  from "./components/CampaignPanel.vue"
+
 import AdvancedHeatmapPanel
   from "./components/AdvancedHeatmapPanel.vue"
-
-import DevicePanel
-  from "./components/DevicePanel.vue"
-
-
 
 import {
   useSpectrum,
 } from "./composables/useSpectrum"
 
 import {
+  markers,
   useMarkers,
 } from "./composables/useMarkers"
 
@@ -253,7 +257,6 @@ const showAverage =
   ref(false)
 
 const {
-  markers,
   moveMarkerToPeak,
   peakSearch: markerPeakSearch,
   nextPeak: markerNextPeak,
@@ -286,16 +289,25 @@ const snapshot = computed(
   () => spectrum.value
 )
 
-const connectionClass = computed(() => {
-  switch (connectionStatus.value) {
-    case "connected":
-      return "status-connected"
-    case "connecting":
-      return "status-connecting"
-    default:
-      return "status-disconnected"
-  }
-})
+const activeSection = ref("analyzer")
+const activeTab = ref("analysis")
+
+const sections = [
+  { id: "analyzer", label: "Analizador" },
+  { id: "connections", label: "Conexiones" },
+  { id: "missions", label: "Misiones" },
+  { id: "processing", label: "Procesamiento" },
+  { id: "analysis", label: "Análisis" },
+  { id: "config", label: "Configuración" },
+  { id: "files", label: "Archivo" },
+]
+
+const tabs = [
+  { id: "analysis", label: "Herramientas" },
+  { id: "status", label: "Estado" },
+]
+
+
 
 watch(
   snapshot,
@@ -426,15 +438,7 @@ function clearAccumulators() {
   traceAnalysis.reset()
 }
 
-const activeTab = ref("controls")
-
-const tabs = [
-  { id: "controls", label: "Controles" },
-  { id: "analysis", label: "Análisis" },
-  { id: "iq", label: "IQ/Audio" },
-  { id: "data", label: "Datos" },
-  { id: "system", label: "Sistema" },
-]
+function onReceiverSelect() {}
 
 onMounted(() => {
   connect()
@@ -455,12 +459,38 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.main-nav {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: white;
+  border-bottom: 1px solid var(--sncte-border);
+  height: 36px;
+  align-items: center;
+}
+
+.nav-button {
+  padding: 4px 12px;
+  border: none;
+  border-radius: 6px;
+  background: #f6f9ff;
+  color: var(--sncte-blue-dark);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.nav-button.active {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: white;
+}
+
 .layout {
   padding: 4px;
   display: flex;
   gap: 4px;
   align-items: stretch;
-  height: calc(100vh - 56px);
+  height: calc(100vh - 100px);
   overflow: hidden;
 }
 
@@ -470,15 +500,41 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .right-panel {
-  width: 340px;
+  width: 300px;
   display: flex;
   flex-direction: column;
   gap: 6px;
   overflow: hidden;
+}
+
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: white;
+  border: 1px solid var(--sncte-border);
+  border-radius: 6px;
+}
+
+.tab-button {
+  flex: 1;
+  height: 26px;
+  border: none;
+  border-radius: 4px;
+  background: #f6f9ff;
+  color: var(--sncte-blue-dark);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tab-button.active {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: white;
 }
 
 .tab-content {
@@ -489,44 +545,14 @@ body {
   gap: 8px;
 }
 
-.tab-bar {
-  display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
-  background: white;
-  border: 1px solid var(--sncte-border);
-  border-radius: var(--radius);
-  padding: 6px;
-  box-shadow: var(--shadow);
-}
-
-.tab-button {
-  flex: 1;
-  min-width: 70px;
-  height: 28px;
-  border: none;
-  border-radius: 6px;
-  background: #f6f9ff;
-  color: var(--sncte-blue-dark);
+.status-mini {
   font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.tab-button.active {
-  background: var(--sncte-blue);
-  color: white;
-}
-
-.tab-content {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  color: #374151;
 }
 
 .connection-bar {
-  margin-bottom: 8px;
-  font-size: 12px;
+  margin-bottom: 4px;
+  font-size: 11px;
   color: #374151;
 }
 
