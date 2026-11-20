@@ -50,88 +50,70 @@
 
     <div class="right-panel">
 
-      <DevicePanel />
+      <div class="tab-bar">
+        <button
+          v-for="tab in tabs"
+          :key="tab.id"
+          class="tab-button"
+          :class="{ active: activeTab === tab.id }"
+          @click="activeTab = tab.id"
+        >
+          {{ tab.label }}
+        </button>
+      </div>
 
-      <SpectrumControls />
+      <div class="tab-content">
 
-      <CollapsiblePanel
-        title="Herramientas del Analizador"
-        :defaultOpen="true"
-      >
+        <template v-if="activeTab === 'controls'">
+          <DevicePanel />
+          <SpectrumControls />
+        </template>
 
-        <AnalyzerTools
-          @peakSearch="peakSearch"
-          @centerMarker="centerOnMarker"
-          @resetView="resetView"
-          @togglePeakTracking="togglePeakTracking"
-          @markerToPeak="markerToPeak"
-          @nextPeak="nextPeak"
-          @previousPeak="previousPeak"
-          @toggleMaxHold="onToggleMaxHold"
-          @toggleMinHold="onToggleMinHold"
-          @toggleAverage="onToggleAverage"
-          @clearAccumulators="clearAccumulators"
-        />
+        <template v-if="activeTab === 'analysis'">
+          <AnalyzerTools
+            @peakSearch="peakSearch"
+            @centerMarker="centerOnMarker"
+            @resetView="resetView"
+            @togglePeakTracking="togglePeakTracking"
+            @markerToPeak="markerToPeak"
+            @nextPeak="nextPeak"
+            @previousPeak="previousPeak"
+            @toggleMaxHold="onToggleMaxHold"
+            @toggleMinHold="onToggleMinHold"
+            @toggleAverage="onToggleAverage"
+            @clearAccumulators="clearAccumulators"
+          />
+        </template>
 
-      </CollapsiblePanel>
+        <template v-if="activeTab === 'iq'">
+          <IQRecorderPanel />
+          <IQPlayerPanel />
+          <DemodulatorPanel />
+          <AudioPanel />
+        </template>
 
-      <CollapsiblePanel title="Grabación I/Q" :defaultOpen="false">
-        <IQRecorderPanel />
-        <IQPlayerPanel />
-      </CollapsiblePanel>
+        <template v-if="activeTab === 'data'">
+          <RecordingsLibrary />
+          <ExportPanel />
+          <AdvancedHeatmapPanel />
+        </template>
 
-      <CollapsiblePanel title="Demodulación y Audio" :defaultOpen="false">
-        <DemodulatorPanel />
-        <AudioPanel />
-      </CollapsiblePanel>
+        <template v-if="activeTab === 'system'">
+          <MultiDevicePanel />
+          <MissionPanel />
+          <AntennaEditor />
+          <RFChainEditor />
+          <OccupationAuditorPanel />
+          <GPSPanel />
+          <GeoMapView />
+          <SpatialAnalysisPanel />
+          <CoveragePanel />
+          <CampaignPanel />
+          <OllamaPanel />
+          <MLPanel />
+        </template>
 
-      <CollapsiblePanel title="Biblioteca" :defaultOpen="false">
-        <RecordingsLibrary />
-      </CollapsiblePanel>
-
-      <CollapsiblePanel title="Exportaciones" :defaultOpen="false">
-        <ExportPanel />
-      </CollapsiblePanel>
-
-      <CollapsiblePanel title="Asistente IA" :defaultOpen="false">
-        <OllamaPanel />
-      </CollapsiblePanel>
-
-      <CollapsiblePanel title="Machine Learning" :defaultOpen="false">
-        <MLPanel />
-      </CollapsiblePanel>
-
-      <CollapsiblePanel title="Receptores" :defaultOpen="false">
-        <MultiDevicePanel />
-      </CollapsiblePanel>
-
-      <CollapsiblePanel title="Antenas" :defaultOpen="false">
-        <AntennaEditor />
-        <RFChainEditor />
-      </CollapsiblePanel>
-
-      <CollapsiblePanel title="Auditor" :defaultOpen="false">
-        <OccupationAuditorPanel />
-      </CollapsiblePanel>
-
-      <CollapsiblePanel title="Heatmap" :defaultOpen="false">
-        <AdvancedHeatmapPanel />
-      </CollapsiblePanel>
-
-      <CollapsiblePanel title="Misiones" :defaultOpen="false">
-        <MissionPanel />
-      </CollapsiblePanel>
-
-      <CollapsiblePanel title="GPS" :defaultOpen="false">
-        <GPSPanel />
-        <GeoMapView />
-        <SpatialAnalysisPanel />
-        <CoveragePanel />
-      </CollapsiblePanel>
-
-      <CollapsiblePanel title="Campañas" :defaultOpen="false">
-        <CampaignPanel />
-      </CollapsiblePanel>
+      </div>
 
     </div>
 
@@ -235,8 +217,7 @@ import AdvancedHeatmapPanel
 import DevicePanel
   from "./components/DevicePanel.vue"
 
-import CollapsiblePanel
-  from "./components/CollapsiblePanel.vue"
+
 
 import {
   useSpectrum,
@@ -440,6 +421,16 @@ function clearAccumulators() {
   traceAnalysis.reset()
 }
 
+const activeTab = ref("controls")
+
+const tabs = [
+  { id: "controls", label: "Controles" },
+  { id: "analysis", label: "Análisis" },
+  { id: "iq", label: "IQ/Audio" },
+  { id: "data", label: "Datos" },
+  { id: "system", label: "Sistema" },
+]
+
 onMounted(() => {
   connect()
 })
@@ -467,12 +458,47 @@ body {
 }
 
 .right-panel {
-  width: 320px;
+  width: 360px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 10px;
   position: sticky;
   top: 20px;
+}
+
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  background: white;
+  border: 1px solid var(--sncte-border);
+  border-radius: var(--radius);
+  padding: 6px;
+  box-shadow: var(--shadow);
+}
+
+.tab-button {
+  flex: 1;
+  min-width: 70px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: #f6f9ff;
+  color: var(--sncte-blue-dark);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tab-button.active {
+  background: var(--sncte-blue);
+  color: white;
+}
+
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .connection-bar {
