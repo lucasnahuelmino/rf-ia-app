@@ -17,9 +17,10 @@
       </h3>
 
     </div>
+
     <div class="logo-container">
-    <img src= "/enacom-logo.png" alt="ENACOM">
-    </div>  
+      <img src="/enacom-logo.png" alt="ENACOM" />
+    </div>
 
   </header>
 
@@ -32,10 +33,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 10px;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  margin-bottom: 2px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  margin-bottom: 4px;
+  height: 48px;
 }
 
 .title-container {
@@ -46,11 +48,11 @@
 .logo-container {
   display: flex;
   align-items: center;
-  justify-content:center;
+  justify-content: center;
 }
 
-.logo {  
-  height: 80px;
+.logo-container img {
+  height: 32px;
   width: auto;
   object-fit: contain;
 }
@@ -58,22 +60,22 @@
 h1 {
   margin: 0;
   color: var(--sncte-blue-dark);
-  font-size: 35px;
+  font-size: 18px;
   font-weight: 600;
   line-height: 1;
 }
 
 h2 {
-  margin: 8px 0 0 0;
+  margin: 2px 0 0 0;
   color: var(--sncte-blue);
-  font-size: 12px;
+  font-size: 9px;
   font-weight: 600;
 }
 
 h3 {
-  margin: 4px 0 0 0;
+  margin: 1px 0 0 0;
   color: #65748b;
-  font-size: 11px;
+  font-size: 8px;
   font-weight: 400;
 }
 

@@ -546,7 +546,7 @@ onBeforeUnmount(() => {
 .canvas-container {
   position: relative;
   width: 100%;
-  height: 600px;
+  height: 300px;
   background: #101010;
   border: 1px solid #2a2a2a;
   border-radius: 8px;

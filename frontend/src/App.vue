@@ -444,31 +444,49 @@ onMounted(() => {
 
 <style>
 
-body {
+html, body, #app {
+  height: 100%;
   margin: 0;
+  overflow: hidden;
+}
+
+body {
   background: var(--sncte-background);
   font-family: Arial, Helvetica, sans-serif;
 }
 
 .layout {
-  padding: 10px;
+  padding: 4px;
   display: flex;
-  gap: 10px;
-  align-items: flex-start;
+  gap: 4px;
+  align-items: stretch;
+  height: calc(100vh - 56px);
+  overflow: hidden;
 }
 
 .left-panel {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
 }
 
 .right-panel {
-  width: 360px;
+  width: 340px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  position: sticky;
-  top: 20px;
+  gap: 6px;
+  overflow: hidden;
+}
+
+.tab-content {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .tab-bar {
