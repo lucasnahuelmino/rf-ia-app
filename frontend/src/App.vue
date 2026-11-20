@@ -50,17 +50,16 @@
 
     <div class="right-panel">
 
-      <div class="tab-bar">
-        <button
+      <GradientButtonGroup>
+        <GradientButton
           v-for="tab in tabs"
           :key="tab.id"
-          class="tab-button"
-          :class="{ active: activeTab === tab.id }"
+          :active="activeTab === tab.id"
           @click="activeTab = tab.id"
         >
           {{ tab.label }}
-        </button>
-      </div>
+        </GradientButton>
+      </GradientButtonGroup>
 
       <div class="tab-content">
 
@@ -180,6 +179,12 @@ import OllamaPanel
 
 import MLPanel
   from "./components/MLPanel.vue"
+
+import GradientButtonGroup
+  from "./components/ui/GradientButtonGroup.vue"
+
+import GradientButton
+  from "./components/ui/GradientButton.vue"
 
 import MultiDevicePanel
   from "./components/MultiDevicePanel.vue"
