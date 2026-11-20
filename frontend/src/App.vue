@@ -45,6 +45,7 @@
       </div>
 
       <div class="viz-area">
+        <MarkerBar />
         <SpectrumStatus v-if="snapshot" :snapshot="snapshot" />
         <SpectrumCanvas
           v-if="snapshot"
@@ -63,7 +64,6 @@
         <WaterfallCanvas v-if="snapshot" :snapshot="snapshot" />
       </div>
 
-      <MarkerBar />
       <MarkerTable />
 
     </div>
@@ -362,27 +362,33 @@ body {
 .main-nav {
   display: flex;
   gap: 4px;
-  padding: 4px;
-  background: white;
-  border-bottom: 1px solid var(--sncte-border);
+  padding: 4px 8px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
   height: 36px;
   align-items: center;
 }
 
 .nav-button {
   padding: 4px 12px;
-  border: none;
-  border-radius: 6px;
-  background: #f6f9ff;
-  color: var(--sncte-blue-dark);
-  font-size: 12px;
+  border: 1px solid var(--border-2);
+  border-radius: 4px;
+  background: var(--bg-panel-2);
+  color: var(--text);
+  font-size: 11px;
   font-weight: 600;
   cursor: pointer;
 }
 
+.nav-button:hover {
+  border-color: var(--accent);
+  color: var(--text-h);
+}
+
 .nav-button.active {
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
   color: white;
+  border: none;
 }
 
 .layout {
