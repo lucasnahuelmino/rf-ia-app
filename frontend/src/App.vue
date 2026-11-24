@@ -20,6 +20,7 @@
 
     <div class="main-area">
 
+      <template v-if="activeSection === 'analyzer'">
       <div class="toolbar">
         <AnalyzerTools
           @peakSearch="peakSearch"
@@ -66,6 +67,52 @@
 
       <MarkerTable />
 
+      </template>
+
+      <template v-if="activeSection === 'connections'">
+        <MultiDevicePanel />
+        <AntennaEditor />
+        <RFChainEditor />
+        <GPSPanel />
+      </template>
+
+      <template v-if="activeSection === 'missions'">
+        <MissionPanel />
+        <CampaignPanel />
+      </template>
+
+      <template v-if="activeSection === 'processing'">
+        <WorkspacePanel />
+        <IQRecorderPanel />
+        <IQPlayerPanel />
+        <DemodulatorPanel />
+        <AudioPanel />
+        <AudioLivePanel />
+      </template>
+
+      <template v-if="activeSection === 'analysis'">
+        <MeasurementsPanel v-if="snapshot" :snapshot="snapshot" />
+        <AdvancedHeatmapPanel />
+        <SpatialAnalysisPanel />
+        <CoveragePanel />
+        <OccupationAuditorPanel />
+        <GeoMapView />
+        <OllamaPanel />
+        <MLPanel />
+      </template>
+
+      <template v-if="activeSection === 'config'">
+        <DevicePanel />
+        <SpectrumControls />
+        <OllamaPanel />
+        <MLPanel />
+      </template>
+
+      <template v-if="activeSection === 'files'">
+        <RecordingsLibrary />
+        <ExportPanel />
+      </template>
+
     </div>
 
   </div>
@@ -80,6 +127,64 @@ import {
   ref,
   watch,
 } from "vue"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 import AppHeader
   from "./components/AppHeader.vue"
@@ -108,28 +213,74 @@ import MarkerBar
 import MarkerTable
   from "./components/MarkerTable.vue"
 
+import MeasurementsPanel
+  from "./components/MeasurementsPanel.vue"
 
 import DevicePanel
   from "./components/DevicePanel.vue"
 
+import IQRecorderPanel
+  from "./components/IQRecorderPanel.vue"
 
+import IQPlayerPanel
+  from "./components/IQPlayerPanel.vue"
 
+import DemodulatorPanel
+  from "./components/DemodulatorPanel.vue"
 
+import AudioPanel
+  from "./components/AudioPanel.vue"
 
+import AudioLivePanel
+  from "./components/AudioLivePanel.vue"
 
+import RecordingsLibrary
+  from "./components/RecordingsLibrary.vue"
 
+import ExportPanel
+  from "./components/ExportPanel.vue"
 
+import OllamaPanel
+  from "./components/OllamaPanel.vue"
 
+import MLPanel
+  from "./components/MLPanel.vue"
 
+import MultiDevicePanel
+  from "./components/MultiDevicePanel.vue"
 
+import MissionPanel
+  from "./components/MissionPanel.vue"
 
+import AntennaEditor
+  from "./components/AntennaEditor.vue"
 
+import RFChainEditor
+  from "./components/RFChainEditor.vue"
 
+import OccupationAuditorPanel
+  from "./components/OccupationAuditorPanel.vue"
 
+import GPSPanel
+  from "./components/GPSPanel.vue"
 
+import GeoMapView
+  from "./components/GeoMapView.vue"
 
+import SpatialAnalysisPanel
+  from "./components/SpatialAnalysisPanel.vue"
 
+import CoveragePanel
+  from "./components/CoveragePanel.vue"
 
+import CampaignPanel
+  from "./components/CampaignPanel.vue"
+
+import AdvancedHeatmapPanel
+  from "./components/AdvancedHeatmapPanel.vue"
+
+import WorkspacePanel
+  from "./components/WorkspacePanel.vue"
 
 import {
   useSpectrum,

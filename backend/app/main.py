@@ -10,6 +10,7 @@ from app.api.routers.config import router as config_router
 from app.api.routers.iq import router as iq_router
 from app.api.routers.demod import router as demod_router
 from app.api.routers.audio import router as audio_router
+from app.api.routers.audio_live import router as audio_live_router
 from app.api.routers.recordings import router as recordings_router
 from app.api.routers.sessions import router as sessions_router
 from app.api.routers.exports import router as exports_router
@@ -25,6 +26,7 @@ from app.api.routers.gps import router as gps_router
 from app.api.routers.geo import router as geo_router
 from app.api.routers.spatial import router as spatial_router
 from app.api.routers.coverage import router as coverage_router
+from app.api.routers.instrument_sessions import router as instrument_sessions_router
 from app.api.routers.campaigns import router as campaigns_router
 from app.rf.spectrum_worker import SpectrumWorker
 
@@ -69,6 +71,7 @@ app.include_router(ws_router)
 app.include_router(iq_router)
 app.include_router(demod_router)
 app.include_router(audio_router)
+app.include_router(audio_live_router)
 app.include_router(recordings_router)
 app.include_router(sessions_router)
 app.include_router(exports_router)
@@ -83,4 +86,5 @@ app.include_router(gps_router)
 app.include_router(geo_router)
 app.include_router(spatial_router)
 app.include_router(coverage_router)
+app.include_router(instrument_sessions_router)
 app.include_router(campaigns_router)
